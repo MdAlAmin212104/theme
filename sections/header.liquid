@@ -1,10 +1,11 @@
+{%- assign logo_size = section.settings.logo_size -%}
 <header>
   <a href="{{ routes.root_url }}" class="header__heading-link link link--text focus-inset">
   {% if section.settings.logo != blank %}
     <div class="header__heading-logo-wrapper">
       {{
         section.settings.logo
-        | image_url: width: 400
+        | image_url: width: logo_size
         | image_tag:
           class: 'header__heading-logo motion-reduce',
           alt: shop.name,
@@ -24,17 +25,18 @@
   </div>
 
   <div class="header__icons">
-    {% if shop.customer_accounts_enabled %}
-      {{ 'icon-account.svg' | inline_asset_content | link_to: routes.account_url }}
-    {% endif %}
 
     <a href="{{ routes.cart_url }}">
       {% if cart.item_count > 0 %}
         <sup>{{ cart.item_count }}</sup>
       {% endif %}
-
       {{ 'icon-cart.svg' | inline_asset_content }}
     </a>
+
+
+    {% if shop.customer_accounts_enabled %}
+      {{ 'icon-profile.svg' | inline_asset_content | link_to: routes.account_url }}
+    {% endif %}
   </div>
 </header>
 
@@ -57,7 +59,7 @@
     max-width: var(--page-margin);
   }
   header svg {
-    width: 2rem;
+    width: 24px;
   }
   header .header__menu,
   header .header__icons {
@@ -79,6 +81,15 @@
       "type": "image_picker",
       "id": "logo",
       "label": "Selected Your logo"
+    },
+    {
+      "type" : "range",
+      "id": "logo_size",
+      "label": "Selecte your logo width",
+      "min": 80,
+      "max": 200,
+      "step": 10,
+      "default": 100,
     }
   ]
 }
