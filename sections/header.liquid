@@ -1,3 +1,6 @@
+{{ 'header.css' | asset_url | stylesheet_tag: preload: true }}
+<script src="{{ 'header.js' | asset_url }}" defer></script>
+
 {%- liquid
   assign logo_size = section.settings.logo_size
   assign search_enabled = section.settings.enable_search
@@ -40,8 +43,8 @@
       <ul class="header__nav-list">
         {% for link in section.settings.menu.links %}
           <li class="header__nav-item{% if link.links.size > 0 %} has-dropdown{% endif %}">
-            <a 
-              href="{{ link.url }}" 
+            <a
+              href="{{ link.url }}"
               class="header__nav-link{% if link.active %} header__nav-link--active{% endif %}"
               {% if link.links.size > 0 %}
                 aria-haspopup="true"
@@ -62,8 +65,8 @@
               <ul class="dropdown dropdown--child" data-dropdown-menu>
                 {% for child_link in link.links %}
                   <li class="dropdown__item{% if child_link.links.size > 0 %} has-dropdown{% endif %}">
-                    <a 
-                      href="{{ child_link.url }}" 
+                    <a
+                      href="{{ child_link.url }}"
                       class="dropdown__link"
                       {% if child_link.links.size > 0 %}
                         aria-haspopup="true"
@@ -73,7 +76,13 @@
                     >
                       {{ child_link.title }}
                       {% if child_link.links.size > 0 %}
-                        <svg class="dropdown-icon dropdown-icon--right" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                        <svg
+                          class="dropdown-icon dropdown-icon--right"
+                          width="12"
+                          height="12"
+                          viewBox="0 0 12 12"
+                          fill="none"
+                        >
                           <path d="M4.5 3L7.5 6L4.5 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                       {% endif %}
@@ -103,19 +112,47 @@
     <!-- Search Bar (Desktop) -->
     {% if search_enabled %}
       <div class="header__search">
-        <form action="{{ routes.search_url }}" method="get" role="search" class="header__search-form">
-          <button type="submit" class="header__search-button" aria-label="Search">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M21.7959 20.2041L17.3437 15.75C18.6787 14.0104 19.3019 11.8282 19.087 9.64607C18.8722 7.4639 17.8353 5.44516 16.1867 3.99937C14.5382 2.55357 12.4014 1.78899 10.2098 1.86071C8.01829 1.93244 5.93607 2.8351 4.38558 4.38559C2.83509 5.93608 1.93243 8.0183 1.8607 10.2098C1.78898 12.4014 2.55356 14.5382 3.99936 16.1867C5.44515 17.8353 7.46389 18.8722 9.64606 19.087C11.8282 19.3019 14.0104 18.6787 15.75 17.3438L20.2059 21.8006C20.3106 21.9053 20.4348 21.9883 20.5715 22.0449C20.7083 22.1016 20.8548 22.1307 21.0028 22.1307C21.1508 22.1307 21.2973 22.1016 21.4341 22.0449C21.5708 21.9883 21.695 21.9053 21.7997 21.8006C21.9043 21.696 21.9873 21.5717 22.044 21.435C22.1006 21.2983 22.1298 21.1517 22.1298 21.0037C22.1298 20.8558 22.1006 20.7092 22.044 20.5725C21.9873 20.4358 21.9043 20.3115 21.7997 20.2069L21.7959 20.2041ZM4.12499 10.5C4.12499 9.23915 4.49888 8.0066 5.19938 6.95824C5.89987 5.90988 6.89551 5.09278 8.06039 4.61027C9.22527 4.12776 10.5071 4.00151 11.7437 4.2475C12.9803 4.49348 14.1162 5.10064 15.0078 5.9922C15.8994 6.88376 16.5065 8.01967 16.7525 9.2563C16.9985 10.4929 16.8722 11.7747 16.3897 12.9396C15.9072 14.1045 15.0901 15.1001 14.0418 15.8006C12.9934 16.5011 11.7608 16.875 10.5 16.875C8.80977 16.8733 7.18927 16.2011 5.99411 15.0059C4.79894 13.8107 4.12673 12.1902 4.12499 10.5Z" fill="black" fill-opacity="0.4"/>
+        <form
+          action="{{ routes.search_url }}"
+          method="get"
+          role="search"
+          class="header__search-form"
+          autocomplete="off"
+        >
+          <button
+            type="submit"
+            class="header__search-button"
+            aria-label="search.header.submit_aria_label"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path d="M21.7959 20.2041L17.3437 15.75C18.6787 14.0104 19.3019 11.8282 19.087 9.64607C18.8722 7.4639 17.8353 5.44516 16.1867 3.99937C14.5382 2.55357 12.4014 1.78899 10.2098 1.86071C8.01829 1.93244 5.93607 2.8351 4.38558 4.38559C2.83509 5.93608 1.93243 8.0183 1.8607 10.2098C1.78898 12.4014 2.55356 14.5382 3.99936 16.1867C5.44515 17.8353 7.46389 18.8722 9.64606 19.087C11.8282 19.3019 14.0104 18.6787 15.75 17.3438L20.2059 21.8006C20.3106 21.9053 20.4348 21.9883 20.5715 22.0449C20.7083 22.1016 20.8548 22.1307 21.0028 22.1307C21.1508 22.1307 21.2973 22.1016 21.4341 22.0449C21.5708 21.9883 21.695 21.9053 21.7997 21.8006C21.9043 21.696 21.9873 21.5717 22.044 21.435C22.1006 21.2983 22.1298 21.1517 22.1298 21.0037C22.1298 20.8558 22.1006 20.7092 22.044 20.5725C21.9873 20.4358 21.9043 20.3115 21.7997 20.2069L21.7959 20.2041ZM4.12499 10.5C4.12499 9.23915 4.49888 8.0066 5.19938 6.95824C5.89987 5.90988 6.89551 5.09278 8.06039 4.61027C9.22527 4.12776 10.5071 4.00151 11.7437 4.2475C12.9803 4.49348 14.1162 5.10064 15.0078 5.9922C15.8994 6.88376 16.5065 8.01967 16.7525 9.2563C16.9985 10.4929 16.8722 11.7747 16.3897 12.9396C15.9072 14.1045 15.0901 15.1001 14.0418 15.8006C12.9934 16.5011 11.7608 16.875 10.5 16.875C8.80977 16.8733 7.18927 16.2011 5.99411 15.0059C4.79894 13.8107 4.12673 12.1902 4.12499 10.5Z"
+                    fill="black" fill-opacity="0.4" />
             </svg>
           </button>
+
           <input
             type="search"
             name="q"
-            placeholder="{{ section.settings.search_placeholder | default: 'Search for products...' }}"
             class="header__search-input"
+            placeholder="{{ section.settings.search_placeholder | default: 'Search for products...' }}"
+            aria-label="search.header.input_aria_label"
             autocomplete="off"
           >
+
+          <div
+            class="header__search-suggestions"
+            role="listbox"
+            aria-label="search.header.suggestions_label"
+            hidden
+          ></div>
         </form>
       </div>
     {% endif %}
@@ -153,19 +190,32 @@
   <!-- Mobile Search (Hidden by default) -->
   {% if search_enabled %}
     <div class="header__search-mobile" data-search-mobile>
-      <form action="{{ routes.search_url }}" method="get" role="search" class="header__search-form">
-        <input
-          type="search"
-          name="q"
-          placeholder="{{ section.settings.search_placeholder | default: 'Search for products...' }}"
-          class="header__search-input"
-          autocomplete="off"
-        >
-        <button type="submit" class="header__search-button" aria-label="Search">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M21.7959 20.2041L17.3437 15.75C18.6787 14.0104 19.3019 11.8282 19.087 9.64607C18.8722 7.4639 17.8353 5.44516 16.1867 3.99937C14.5382 2.55357 12.4014 1.78899 10.2098 1.86071C8.01829 1.93244 5.93607 2.8351 4.38558 4.38559C2.83509 5.93608 1.93243 8.0183 1.8607 10.2098C1.78898 12.4014 2.55356 14.5382 3.99936 16.1867C5.44515 17.8353 7.46389 18.8722 9.64606 19.087C11.8282 19.3019 14.0104 18.6787 15.75 17.3438L20.2059 21.8006C20.3106 21.9053 20.4348 21.9883 20.5715 22.0449C20.7083 22.1016 20.8548 22.1307 21.0028 22.1307C21.1508 22.1307 21.2973 22.1016 21.4341 22.0449C21.5708 21.9883 21.695 21.9053 21.7997 21.8006C21.9043 21.696 21.9873 21.5717 22.044 21.435C22.1006 21.2983 22.1298 21.1517 22.1298 21.0037C22.1298 20.8558 22.1006 20.7092 22.044 20.5725C21.9873 20.4358 21.9043 20.3115 21.7997 20.2069L21.7959 20.2041ZM4.12499 10.5C4.12499 9.23915 4.49888 8.0066 5.19938 6.95824C5.89987 5.90988 6.89551 5.09278 8.06039 4.61027C9.22527 4.12776 10.5071 4.00151 11.7437 4.2475C12.9803 4.49348 14.1162 5.10064 15.0078 5.9922C15.8994 6.88376 16.5065 8.01967 16.7525 9.2563C16.9985 10.4929 16.8722 11.7747 16.3897 12.9396C15.9072 14.1045 15.0901 15.1001 14.0418 15.8006C12.9934 16.5011 11.7608 16.875 10.5 16.875C8.80977 16.8733 7.18927 16.2011 5.99411 15.0059C4.79894 13.8107 4.12673 12.1902 4.12499 10.5Z" fill="black" fill-opacity="0.4"/>
-            </svg>
-        </button> 
+      <form
+        action="{{ routes.search_url }}"
+        method="get"
+        role="search"
+        class="header__search-form"
+        autocomplete="off"
+      >
+      <input
+        type="search"
+        name="q"
+        class="header__search-input"
+        placeholder="{{ section.settings.search_placeholder | default: 'Search for products...' }}"
+        aria-label="search.header.input_aria_label"
+        autocomplete="off"
+      >
+      <button type="submit" class="header__search-button" aria-label="Search">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M21.7959 20.2041L17.3437 15.75C18.6787 14.0104 19.3019 11.8282 19.087 9.64607C18.8722 7.4639 17.8353 5.44516 16.1867 3.99937C14.5382 2.55357 12.4014 1.78899 10.2098 1.86071C8.01829 1.93244 5.93607 2.8351 4.38558 4.38559C2.83509 5.93608 1.93243 8.0183 1.8607 10.2098C1.78898 12.4014 2.55356 14.5382 3.99936 16.1867C5.44515 17.8353 7.46389 18.8722 9.64606 19.087C11.8282 19.3019 14.0104 18.6787 15.75 17.3438L20.2059 21.8006C20.3106 21.9053 20.4348 21.9883 20.5715 22.0449C20.7083 22.1016 20.8548 22.1307 21.0028 22.1307C21.1508 22.1307 21.2973 22.1016 21.4341 22.0449C21.5708 21.9883 21.695 21.9053 21.7997 21.8006C21.9043 21.696 21.9873 21.5717 22.044 21.435C22.1006 21.2983 22.1298 21.1517 22.1298 21.0037C22.1298 20.8558 22.1006 20.7092 22.044 20.5725C21.9873 20.4358 21.9043 20.3115 21.7997 20.2069L21.7959 20.2041ZM4.12499 10.5C4.12499 9.23915 4.49888 8.0066 5.19938 6.95824C5.89987 5.90988 6.89551 5.09278 8.06039 4.61027C9.22527 4.12776 10.5071 4.00151 11.7437 4.2475C12.9803 4.49348 14.1162 5.10064 15.0078 5.9922C15.8994 6.88376 16.5065 8.01967 16.7525 9.2563C16.9985 10.4929 16.8722 11.7747 16.3897 12.9396C15.9072 14.1045 15.0901 15.1001 14.0418 15.8006C12.9934 16.5011 11.7608 16.875 10.5 16.875C8.80977 16.8733 7.18927 16.2011 5.99411 15.0059C4.79894 13.8107 4.12673 12.1902 4.12499 10.5Z" fill="black" fill-opacity="0.4"/>
+        </svg>
+      </button>
+      <div
+        class="header__search-suggestions"
+        role="listbox"
+        aria-label="search.header.suggestions_label"
+        hidden
+        ></div>
       </form>
     </div>
   {% endif %}
@@ -173,617 +223,6 @@
 
 <!-- Mobile Menu Overlay -->
 <div class="header__overlay" data-menu-overlay></div>
-
-{% stylesheet %}
-  :root {
-    --header-height: 80px;
-    --header-bg: #ffffff;
-    --header-text: #000000;
-    --header-border: #e5e5e5;
-    --header-hover: #666666;
-    --header-accent: #000000;
-    --header-padding: 1.5rem;
-    --header-gap: 2rem;
-  }
-
-  /* Base Header Styles */
-  .site-header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background-color: var(--header-bg);
-  }
-
-  .header-container {
-    margin: 0 auto;
-    height: var(--header-height);
-    display: flex;
-    align-items: center;
-    gap: var(--header-gap);
-  }
-
-  /* Menu Toggle (Mobile) */
-  .header__menu-toggle {
-    display: none;
-    background: none;
-    border: none;
-    padding: 0.5rem;
-    cursor: pointer;
-    color: var(--header-text);
-    margin-right: 0.5rem;
-  }
-
-  .header__menu-toggle:hover {
-    color: var(--header-hover);
-  }
-
-  /* Logo */
-  .header__logo {
-    flex-shrink: 0;
-  }
-
-  .header__logo-link {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-  }
-
-  .header__logo-image {
-    display: block;
-    height: auto;
-    max-height: 50px;
-  }
-
-  .header__logo-text {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--header-text);
-    letter-spacing: -0.02em;
-  }
-
-  /* Navigation */
-  .header__nav {
-    flex: 0 0 auto;
-  }
-
-  .header__nav-list {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .header__nav-item {
-    margin: 0;
-    position: relative;
-  }
-
-  .header__nav-link {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.5rem 0;
-    font-size: 0.9375rem;
-    font-weight: 400;
-    color: var(--header-text);
-    text-decoration: none;
-    white-space: nowrap;
-    transition: color 0.2s ease;
-  }
-
-  .header__nav-link:hover,
-  .header__nav-link--active {
-    color: var(--header-hover);
-  }
-
-  /* Dropdown Icon */
-  .dropdown-icon {
-    transition: transform 0.2s ease;
-  }
-
-  .header__nav-item.is-active > .header__nav-link .dropdown-icon {
-    transform: rotate(180deg);
-  }
-
-  /* Desktop Dropdown Styles */
-  .dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    min-width: 220px;
-    background-color: #ffffff;
-    border: 1px solid var(--header-border);
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    list-style: none;
-    margin: 0.5rem 0 0 0;
-    padding: 0.5rem 0;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.2s ease;
-    z-index: 1000;
-  }
-
-  .header__nav-item.is-active > .dropdown {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-  }
-
-  /* Grandchild Dropdown Positioning */
-  .dropdown--grandchild {
-    top: 0;
-    left: 100%;
-    margin: 0 0 0 0.5rem;
-  }
-
-  .dropdown__item {
-    position: relative;
-    margin: 0;
-  }
-
-  .dropdown__item.is-active > .dropdown {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-  }
-
-  .dropdown__link {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.75rem 1.25rem;
-    font-size: 0.9375rem;
-    color: var(--header-text);
-    text-decoration: none;
-    transition: background-color 0.2s ease;
-  }
-
-  .dropdown__link:hover {
-    background-color: #f5f5f5;
-  }
-
-  .dropdown-icon--right {
-    margin-left: auto;
-  }
-
-  /* Search Bar */
-  .header__search {
-    flex: 1 1 auto;
-    margin: 0 auto;
-  }
-
-  .header__search-form {
-    position: relative;
-    display: flex;
-    align-items: center;
-    background-color: #f5f5f5;
-    border-radius: 50px;
-    padding: 0 1rem;
-    height: 44px;
-  }
-
-  .header__search-button {
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    color: #999999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 0.75rem;
-  }
-
-  .header__search-input {
-    flex: 1;
-    border: none;
-    background: transparent;
-    font-size: 0.9375rem;
-    color: var(--header-text);
-    outline: none;
-    width: 100%;
-  }
-
-  .header__search-input::placeholder {
-    color: #999999;
-  }
-
-  /* Mobile Search */
-  .header__search-mobile {
-    display: none;
-    padding: 1rem var(--header-padding);
-    background-color: var(--header-bg);
-    border-bottom: 1px solid var(--header-border);
-  }
-
-  .header__search-mobile.is-active {
-    display: block;
-  }
-
-  /* Icons */
-  .header__icons {
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-  }
-
-  .header__icon {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--header-text);
-    text-decoration: none;
-    cursor: pointer;
-    background: none;
-    border: none;
-    padding: 0.5rem;
-    transition: color 0.2s ease;
-  }
-
-  .header__icon:hover {
-    color: var(--header-hover);
-  }
-
-  .header__icon--search-mobile {
-    display: none;
-  }
-
-  .header__cart-count {
-    position: absolute;
-    top: 0;
-    right: 0;
-    min-width: 18px;
-    height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--header-accent);
-    color: #ffffff;
-    font-size: 0.6875rem;
-    font-weight: 600;
-    border-radius: 9px;
-    padding: 0 0.25rem;
-  }
-
-  /* Overlay */
-  .header__overlay {
-    display: none;
-    position: fixed;
-    top: var(--header-height);
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 99;
-  }
-
-  .header__overlay.is-active {
-    display: block;
-  }
-
-  /* Tablet */
-  @media (max-width: 1024px) {
-    .header__nav-list {
-      gap: 1.5rem;
-    }
-
-    .header__search {
-      max-width: 400px;
-    }
-  }
-
-  /* Mobile Styles */
-  @media (max-width: 768px) {
-    :root {
-      --header-height: 64px;
-      --header-padding: 1rem;
-      --header-gap: 0rem;
-    }
-
-    .header__menu-toggle {
-      display: block;
-    }
-
-    .header__logo-image {
-      max-height: 36px;
-    }
-
-    .header__logo-text {
-      font-size: 1.25rem;
-    }
-
-    /* Mobile Navigation */
-    .header__nav {
-      position: fixed;
-      top: var(--header-height);
-      left: -100%;
-      width: 280px;
-      height: calc(100vh - var(--header-height));
-      background-color: var(--header-bg);
-      z-index: 100;
-      transition: left 0.3s ease;
-      overflow-y: auto;
-      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .header__nav.is-active {
-      left: 0;
-    }
-
-    .header__nav-list {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0;
-      padding: 1rem 0;
-    }
-
-    .header__nav-item {
-      width: 100%;
-      border-bottom: 1px solid var(--header-border);
-    }
-
-    .header__nav-link {
-      padding: 1rem 1.5rem;
-      font-size: 1rem;
-      justify-content: space-between;
-      width: 100%;
-    }
-
-    /* Mobile Dropdown Styles */
-    .dropdown {
-      position: static;
-      width: 100%;
-      border: none;
-      border-radius: 0;
-      box-shadow: none;
-      margin: 0;
-      padding: 0;
-      background-color: #f9f9f9;
-      max-height: 0;
-      overflow: hidden;
-      opacity: 1;
-      visibility: visible;
-      transform: none;
-      transition: max-height 0.3s ease;
-    }
-
-    .header__nav-item.is-active > .dropdown {
-      max-height: 1000px;
-    }
-
-    .dropdown--grandchild {
-      background-color: #f0f0f0;
-    }
-
-    .dropdown__link {
-      padding: 0.875rem 2rem;
-    }
-
-    .dropdown--grandchild .dropdown__link {
-      padding-left: 2.5rem;
-    }
-
-    .dropdown-icon--right {
-      transform: rotate(-90deg);
-    }
-
-    .dropdown__item.is-active > .header__nav-link .dropdown-icon--right,
-    .dropdown__item.is-active > .dropdown__link .dropdown-icon--right {
-      transform: rotate(0deg);
-    }
-
-    /* Hide desktop search */
-    .header__search {
-      display: none;
-    }
-
-    .header__icon--search-mobile {
-      display: flex;
-    }
-
-    .header__icons {
-      gap: 0.5rem;
-      margin-left: auto;
-    }
-
-    .header__icon {
-      padding: 0.375rem;
-    }
-  }
-
-  /* Small Mobile */
-  @media (max-width: 480px) {
-    .header__logo-text {
-      font-size: 1.125rem;
-    }
-
-    .header__icons {
-      gap: 0.25rem;
-    }
-  }
-{% endstylesheet %}
-
-{% javascript %}
-  class HeaderMenu {
-    constructor() {
-      this.header = document.querySelector('[data-section-type="header"]');
-      if (!this.header) return;
-
-      this.menuToggle = this.header.querySelector('[data-menu-toggle]');
-      this.menu = this.header.querySelector('[data-menu]');
-      this.overlay = document.querySelector('[data-menu-overlay]');
-      this.searchToggle = this.header.querySelector('[data-search-toggle]');
-      this.searchMobile = this.header.querySelector('[data-search-mobile]');
-      this.dropdownTriggers = this.header.querySelectorAll('[data-dropdown-trigger]');
-
-      this.isMobile = window.innerWidth <= 768;
-
-      this.init();
-    }
-
-    init() {
-      // Menu toggle
-      if (this.menuToggle) {
-        this.menuToggle.addEventListener('click', () => this.toggleMenu());
-      }
-
-      // Overlay click
-      if (this.overlay) {
-        this.overlay.addEventListener('click', () => this.closeMenu());
-      }
-
-      // Search toggle
-      if (this.searchToggle) {
-        this.searchToggle.addEventListener('click', () => this.toggleSearch());
-      }
-
-      // Dropdown triggers
-      this.initDropdowns();
-
-      // Window resize
-      window.addEventListener('resize', () => {
-        const wasMobile = this.isMobile;
-        this.isMobile = window.innerWidth <= 768;
-
-        if (this.isMobile !== wasMobile) {
-          this.closeAllDropdowns();
-          this.closeMenu();
-          this.closeSearch();
-          this.initDropdowns();
-        }
-
-        if (!this.isMobile) {
-          this.closeMenu();
-          this.closeSearch();
-        }
-      });
-
-      // Close dropdowns when clicking outside
-      document.addEventListener('click', (e) => {
-        if (!this.isMobile && !e.target.closest('.header__nav-item')) {
-          this.closeAllDropdowns();
-        }
-      });
-    }
-
-    initDropdowns() {
-      this.dropdownTriggers.forEach(trigger => {
-        // Remove existing listeners
-        const newTrigger = trigger.cloneNode(true);
-        trigger.parentNode.replaceChild(newTrigger, trigger);
-
-        if (this.isMobile) {
-          // Mobile: click to toggle
-          newTrigger.addEventListener('click', (e) => {
-            e.preventDefault();
-            const parent = newTrigger.closest('.header__nav-item, .dropdown__item');
-            this.toggleDropdown(parent);
-          });
-        } else {
-          // Desktop: hover
-          const parent = newTrigger.closest('.header__nav-item, .dropdown__item');
-          
-          parent.addEventListener('mouseenter', () => {
-            this.openDropdown(parent);
-          });
-
-          parent.addEventListener('mouseleave', () => {
-            this.closeDropdown(parent);
-          });
-
-          // Also handle click for accessibility
-          newTrigger.addEventListener('click', (e) => {
-            if (parent.classList.contains('is-active')) {
-              e.preventDefault();
-            }
-          });
-        }
-      });
-
-      // Update the triggers reference
-      this.dropdownTriggers = this.header.querySelectorAll('[data-dropdown-trigger]');
-    }
-
-    toggleMenu() {
-      const isActive = this.menu.classList.toggle('is-active');
-      this.overlay.classList.toggle('is-active', isActive);
-      this.menuToggle.setAttribute('aria-expanded', isActive);
-      document.body.style.overflow = isActive ? 'hidden' : '';
-    }
-
-    closeMenu() {
-      this.menu.classList.remove('is-active');
-      this.overlay.classList.remove('is-active');
-      this.menuToggle.setAttribute('aria-expanded', 'false');
-      document.body.style.overflow = '';
-      this.closeAllDropdowns();
-    }
-
-    toggleSearch() {
-      const isActive = this.searchMobile.classList.toggle('is-active');
-      if (isActive) {
-        this.searchMobile.querySelector('input').focus();
-      }
-    }
-
-    closeSearch() {
-      if (this.searchMobile) {
-        this.searchMobile.classList.remove('is-active');
-      }
-    }
-
-    toggleDropdown(parent) {
-      const isActive = parent.classList.contains('is-active');
-      
-      // Close siblings
-      const siblings = Array.from(parent.parentElement.children).filter(el => el !== parent);
-      siblings.forEach(sibling => this.closeDropdown(sibling));
-
-      if (isActive) {
-        this.closeDropdown(parent);
-      } else {
-        this.openDropdown(parent);
-      }
-    }
-
-    openDropdown(parent) {
-      parent.classList.add('is-active');
-      const trigger = parent.querySelector('[data-dropdown-trigger]');
-      if (trigger) {
-        trigger.setAttribute('aria-expanded', 'true');
-      }
-    }
-
-    closeDropdown(parent) {
-      parent.classList.remove('is-active');
-      const trigger = parent.querySelector('[data-dropdown-trigger]');
-      if (trigger) {
-        trigger.setAttribute('aria-expanded', 'false');
-      }
-      
-      // Close all child dropdowns
-      const childDropdowns = parent.querySelectorAll('.dropdown__item.is-active');
-      childDropdowns.forEach(child => this.closeDropdown(child));
-    }
-
-    closeAllDropdowns() {
-      const activeItems = this.header.querySelectorAll('.header__nav-item.is-active, .dropdown__item.is-active');
-      activeItems.forEach(item => this.closeDropdown(item));
-    }
-  }
-
-  // Initialize
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => new HeaderMenu());
-  } else {
-    new HeaderMenu();
-  }
-{% endjavascript %}
 
 {% schema %}
 {

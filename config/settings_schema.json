@@ -19,7 +19,17 @@
         "id": "type_primary_font",
         "default": "work_sans_n4",
         "label": "t:general.primary"
-      }
+      },
+      {
+        "type": "range",
+        "id": "font-size",
+        "min": 12,
+        "max": 26,
+        "default": 16,
+        "step": 2,
+        "label": "Added your custom font size here",
+        "unit": "px"
+      },
     ]
   },
   {
