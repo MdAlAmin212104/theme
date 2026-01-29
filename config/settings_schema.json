@@ -69,6 +69,18 @@
         "label": "t:labels.foreground"
       },
       {
+        "type": "color",
+        "id": "primary_color",
+        "default": "#000000",
+        "label": "Primary Color"
+      },
+      {
+        "type": "color",
+        "id": "secondary_color",
+        "default": "#000000",
+        "label": "Secondary Color"
+      },
+      {
         "type": "range",
         "id": "input_corner_radius",
         "min": 0,

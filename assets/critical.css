@@ -1,6 +1,14 @@
 /** Critical CSS for the theme. This file is included on every page. */
 
 /* Reset styles inspired by https://www.joshwcomeau.com/css/custom-css-reset/ */
+
+:root {
+  --primay: {{ settings.primary_color }};
+  --secondary: {{ settings.secondary_color }};
+  --tertiary: {{ settings.tertiary_color }};
+  --color-background: {{ settings.background_color }};
+  --color-foreground: {{ settings.foreground_color }};
+}
 * {
   box-sizing: border-box;
   margin: 0;
