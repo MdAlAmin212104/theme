@@ -20,6 +20,9 @@
     {% # Load and preload the critical CSS %}
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
 
+    {% # Load header JavaScript %}
+    <script src="{{ 'header.js' | asset_url }}" defer></script>
+
     {% # Social, title, etc. %}
     {% render 'meta-tags' %}
 

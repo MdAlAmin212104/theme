@@ -1,38 +1,43 @@
 {%- assign logo_size = section.settings.logo_size -%}
-<header>
-  <a href="{{ routes.root_url }}" class="header__heading-link link link--text focus-inset">
-  {% if section.settings.logo != blank %}
-    <div class="header__heading-logo-wrapper">
-      {{
-        section.settings.logo
-        | image_url: width: logo_size
-        | image_tag:
-          class: 'header__heading-logo motion-reduce',
-          alt: shop.name,
-          loading: 'lazy'
-      }}
-    </div>
-  {% else %}
-    <span class="h2">{{ shop.name }}</span>
-  {% endif %}
-</a>
 
+<header class="site-header">
+  <div class="header__toggle-logo">
+    <!-- Mobile toggle -->
+    <button class="menu-toggle" aria-label="Toggle menu">☰</button>
 
-  <div class="header__menu">
+    <!-- Logo -->
+    <a href="{{ routes.root_url }}" class="header__heading-link">
+      {% if section.settings.logo != blank %}
+        <div class="header__heading-logo-wrapper">
+          {{
+            section.settings.logo
+            | image_url: width: logo_size
+            | image_tag: class: 'header__heading-logo', alt: shop.name, loading: 'lazy'
+          }}
+        </div>
+      {% else %}
+        <span class="h2">{{ shop.name }}</span>
+      {% endif %}
+    </a>
+  </div>
+
+  <!-- Menu -->
+  <nav class="header__menu">
     {% for link in section.settings.menu.links %}
       {{ link.title | link_to: link.url }}
     {% endfor %}
-  </div>
+  </nav>
+
+  <!-- Icons -->
 
   <div class="header__icons">
-
+    {{ 'icon-search.svg' | inline_asset_content }}
     <a href="{{ routes.cart_url }}">
       {% if cart.item_count > 0 %}
         <sup>{{ cart.item_count }}</sup>
       {% endif %}
       {{ 'icon-cart.svg' | inline_asset_content }}
     </a>
-
 
     {% if shop.customer_accounts_enabled %}
       {{ 'icon-profile.svg' | inline_asset_content | link_to: routes.account_url }}
@@ -41,30 +46,58 @@
 </header>
 
 {% stylesheet %}
-  header {
+  .site-header {
     height: 5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 1rem;
   }
-  header a {
-    position: relative;
-    text-decoration: none;
-    color: var(--color-foreground);
-  }
-  header a sup {
-    position: absolute;
-    left: 100%;
-    overflow: hidden;
-    max-width: var(--page-margin);
-  }
-  header svg {
-    width: 24px;
-  }
-  header .header__menu,
-  header .header__icons {
+
+  .header__menu,
+  .header__icons {
     display: flex;
     gap: 1rem;
+  }
+
+  .menu-toggle {
+    display: none;
+    background: none;
+    border: 0;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+
+  .header__toggle-logo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+  /* Mobile */
+  @media (max-width: 768px) {
+    .menu-toggle {
+      display: block;
+    }
+
+    .header__menu {
+      position: absolute;
+      top: 5rem;
+      left: 0;
+      right: 0;
+      background: white;
+      flex-direction: column;
+      padding: 1rem;
+      display: none;
+    }
+
+    .header__menu.is-open {
+      display: flex;
+    }
+
+    .header__icons {
+      gap: 0.75rem;
+    }
   }
 {% endstylesheet %}
 
@@ -83,13 +116,13 @@
       "label": "Selected Your logo"
     },
     {
-      "type" : "range",
+      "type": "range",
       "id": "logo_size",
       "label": "Selecte your logo width",
       "min": 80,
       "max": 200,
       "step": 10,
-      "default": 100,
+      "default": 100
     }
   ]
 }
