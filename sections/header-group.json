@@ -20,15 +20,9 @@
         "enable_search": true,
         "search_placeholder": "Search for products..."
       }
-    },
-    "custom_section_NxNdya": {
-      "type": "custom-section",
-      "name": "t:general.custom_section",
-      "settings": {}
     }
   },
   "order": [
-    "header",
-    "custom_section_NxNdya"
+    "header"
   ]
 }
