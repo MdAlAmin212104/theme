@@ -208,14 +208,21 @@ if (document.readyState === 'loading') {
           const image =
             product.image ||
             (product.featured_image && product.featured_image.url) ||
-            '';
+            'https://cdn.shopify.com/shopifycloud/shopify/assets/no-image-100-c91dd4bdb56513f2cbf4fc15436ca35e9d4ecd014546c8d421b1aece861dfecf_280x.gif';
 
-          const price = product.price
-            ? (product.price / 100).toLocaleString(undefined, {
-                style: 'currency',
-                currency: Shopify?.currency?.active || 'USD',
-              })
-            : '';
+           const priceValue =
+        product.price !== undefined
+          ? Number(product.price)
+          : product.price_min !== undefined
+          ? Number(product.price_min)
+          : 0;
+
+      const price = priceValue
+        ? priceValue.toLocaleString(undefined, {
+            style: 'currency',
+            currency: Shopify?.currency?.active || 'USD',
+          })
+        : '';
 
           return `
             <a class="header__search-suggestion" href="${url}" role="option">
@@ -289,3 +296,5 @@ if (document.readyState === 'loading') {
     });
   });
 })();
+
+
