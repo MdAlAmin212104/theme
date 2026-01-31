@@ -20,6 +20,9 @@ class HeaderMenu {
         // Menu toggle
         if (this.menuToggle) {
             this.menuToggle.addEventListener('click', () => this.toggleMenu());
+            if (this.closeSearch) {
+                this.menuToggle.addEventListener('click', () => this.closeSearch());
+            }
         }
 
         // Overlay click
@@ -118,6 +121,9 @@ class HeaderMenu {
         const isActive = this.searchMobile.classList.toggle('is-active');
         if (isActive) {
             this.searchMobile.querySelector('input').focus();
+            if (this.closeMenu) {
+                this.closeMenu();
+            }
         }
     }
 
