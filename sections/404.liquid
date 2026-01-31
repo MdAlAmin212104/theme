@@ -1,23 +1,347 @@
-{% comment %}
-  This section is used in the 404 template to render page shown when customers
-  enter an invalid store URL.
+<style>
+    .error404_page_section{
+      width: 100%;
+      min-height: 100vh;
+      position: relative;
+    }
+    .error404_page__main{
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      max-width: 800px;
+    }
+    .error404_page__heading {
+      text-align: center;
+      margin-top: 1%;
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/404
-{% endcomment %}
+      margin-bottom: 25px;
+      font-size: {{ section.settings.heading_size }}px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: {{ section.settings.heading_color }};
+    }
 
-<h1>{{ '404.title' | t }}</h1>
+    .error404_page__description {
+      display: block;
+      margin: 25px auto;
+      max-width: 776px;
+      text-align: center;
+      color: {{ section.settings.text_color }};
+      font-family: "Open Sans", sans-serif;
+      font-size: {{ section.settings.text_size }}px;
+      font-weight: 400;
+      line-height: 24px;
+    }
 
-<p>
-  {{ '404.not_found' | t }}
-</p>
+    .error404_page__container {
+      position: relative;
+      width: 100%;
+      margin: 10px auto 10px;
+      max-width: 440px;
+      min-height: 410px;
+    }
 
-<a href="{{ routes.all_products_collection_url }}">
-  {{ '404.back_to_shopping' | t }}
-</a>
+    .error404_page__image {
+      width: 100%;
+      display: block;
+    }
+
+    .error404_page__home_button {
+      display: block;
+      margin: 0 auto;
+      width: 260px;
+      height: 64px;
+      background-color: {{ section.settings.button_bg_color }};
+      color: {{ section.settings.button_text_color }};
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 64px;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 30px;
+      text-align: center;
+      transition: background-color 0.3s ease;
+      margin-top: 20px;
+    }
+
+    .error404_page__home_button:hover,
+    .error404_page__home_button:focus {
+      background-color: {{ section.settings.button_hover_color }};
+    }
+
+    .error404_page__explosion_one {
+      position: absolute;
+      top: 108px;
+      left: 102px;
+      opacity: 1;
+      animation: explosionOneAnimation 800ms linear infinite;
+      width: 84px;
+      height: 106px;
+      background: url("{{ section.settings.explosion_image_1 | image_url: width: 500 }}") 50% 50% no-repeat;
+      z-index: 2;
+      {% unless section.settings.enable_animation %}
+        animation: none;
+      {% endunless %}
+    }
+
+    .error404_page__explosion_two {
+      position: absolute;
+      top: 92px;
+      left: 136px;
+      opacity: 1;
+      animation: explosionTwoAnimation 800ms linear infinite;
+      width: 184px;
+      height: 106px;
+      background: url("{{ section.settings.explosion_image_2 | image_url: width: 500}}") 50% 50% no-repeat;
+      z-index: 2;
+      {% unless section.settings.enable_animation %}
+        animation: none;
+      {% endunless %}
+    }
+
+    .error404_page__explosion_three {
+      position: absolute;
+      top: 108px;
+      left: 180px;
+      opacity: 1;
+      animation: explosionThreeAnimation 800ms linear infinite;
+      width: 284px;
+      height: 106px;
+      background: url("{{ section.settings.explosion_image_3 | image_url: width: 500}}") 50% 50% no-repeat;
+      z-index: 2;
+      {% unless section.settings.enable_animation %}
+        animation: none;
+      {% endunless %}
+    }
+
+    @keyframes explosionOneAnimation {
+      0% {
+        top: 108px;
+        left: 102px;
+        opacity: 1;
+      }
+      100% {
+        top: -10px;
+        left: 22px;
+        opacity: 0;
+      }
+    }
+
+    @keyframes explosionTwoAnimation {
+      0% {
+        top: 92px;
+        left: 136px;
+        opacity: 1;
+      }
+      100% {
+        top: -10px;
+        left: 108px;
+        opacity: 0;
+      }
+    }
+
+    @keyframes explosionThreeAnimation {
+      0% {
+        top: 108px;
+        left: 180px;
+        opacity: 1;
+      }
+      100% {
+        top: 28px;
+        left: 276px;
+        opacity: 0;
+      }
+    }
+
+
+  @media screen and (max-width: 767px) {
+    .error404_page__explosion_one {
+      animation: none;
+      width: 0;
+    }
+
+    .error404_page__explosion_two {
+      animation: none;
+      width: 0;
+    }
+
+    .error404_page__explosion_three {
+      animation: none;
+      width: 0;
+    }
+  }
+</style>
+<section class="error404_page_section">
+  <main class="error404_page__main">
+    <h1 class="error404_page__heading">{{ section.settings.heading_text }}</h1>
+    <p class="error404_page__description">{{ section.settings.description_text }}</p>
+
+    <div class="error404_page__container">
+      <img
+        class="error404_page__image"
+        src="{{ section.settings.main_image | image_url: width: 500 }}"
+        alt="{{ shop.name }}"
+        width="400"
+        height="400"
+      >
+
+      {% if section.settings.enable_animation %}
+        <div class="error404_page__explosion_one"></div>
+        <div class="error404_page__explosion_two"></div>
+        <div class="error404_page__explosion_three"></div>
+      {% endif %}
+
+      <a class="error404_page__home_button" href="{{ section.settings.button_link }}">
+        {{ section.settings.button_text }}
+      </a>
+    </div>
+  </main>
+</section>
 
 {% schema %}
 {
-  "name": "t:general.404",
-  "settings": []
+  "name": "404 Error Page",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Heading Settings"
+    },
+    {
+      "type": "text",
+      "id": "heading_text",
+      "label": "Heading Text",
+      "default": "Error 404. The page does not exist"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading Font Size",
+      "min": 20,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Description Settings"
+    },
+    {
+      "type": "textarea",
+      "id": "description_text",
+      "label": "Description Text",
+      "default": "Sorry! The page you are looking for can not be found. Perhaps the page you requested was moved or deleted. It is also possible that you made a small typo when entering the address. Go to the main page."
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Description Font Size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Description Color",
+      "default": "#bcecf2"
+    },
+    {
+      "type": "header",
+      "content": "Main Image Settings"
+    },
+    {
+      "type": "image_picker",
+      "id": "main_image",
+      "label": "Main Cloud Image"
+    },
+    {
+      "type": "text",
+      "id": "main_image_alt",
+      "label": "Image Alt Text",
+      "default": "404 Error"
+    },
+    {
+      "type": "header",
+      "content": "Animation Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_animation",
+      "label": "Enable Explosion Animation",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "explosion_image_1",
+      "label": "Explosion Image 1"
+    },
+    {
+      "type": "image_picker",
+      "id": "explosion_image_2",
+      "label": "Explosion Image 2"
+    },
+    {
+      "type": "image_picker",
+      "id": "explosion_image_3",
+      "label": "Explosion Image 3"
+    },
+    {
+      "type": "header",
+      "content": "Button Settings"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "go home"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link",
+      "default": "/"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button Background Color",
+      "default": "#f95801"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Button Hover Color",
+      "default": "#ff7400"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_shadow_color",
+      "label": "Button Shadow Color",
+      "default": "#9c1007"
+    },
+    {
+      "type": "color",
+      "id": "button_glow_color",
+      "label": "Button Glow Color",
+      "default": "rgba(253, 60, 0, 0.75)"
+    }
+  ]
 }
 {% endschema %}

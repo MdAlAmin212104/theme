@@ -30,11 +30,15 @@
   </head>
 
   <body>
-    {% sections 'header-group' %}
+    {%- unless request.page_type == '404' -%}
+      {% sections 'header-group' %}
+    {%- endunless -%}
 
     {{ content_for_layout }}
 
-    {% sections 'footer-group' %}
+    {%- unless request.page_type == '404' -%}
+      {% sections 'footer-group' %}
+    {%- endunless -%}
 
   </body>
 </html>
