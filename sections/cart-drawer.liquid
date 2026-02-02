@@ -1,0 +1,26 @@
+<h1>This is Cart</h1>
+{% if cart.empty? %}
+<p>Your cart are empty</p>
+{% else %}
+{% form 'cart', cart %}
+    {% for item in cart.items %}
+        <img src="{{ item.image | image_url }}" alt="{{ item.title }}" width="200" height="200">
+        <h3>{{ item.product.title }}</h3>
+        <p>{{ item.variant.title }}</p>
+        <a href="{{ item.url_to_remove }}">Remove</a>
+        <p>{{ item.final_line_price | money }}</p>
+        <input type="number" name="updates[]" value="{{ item.quantity }}" min="0">
+    {% endfor %}
+
+    <p>Total Discounts: {{ cart.total_discounts | money }}</p>
+    <p>Total Price: {{ cart.total_price | money }}</p>
+    <button type="submit" name="checkout">Checkout</button>
+{% endform %}
+{% endif %}
+
+{% schema %}
+{
+    "name": "cart-drawer",
+    "settings": []
+}
+{% endschema %}
