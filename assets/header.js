@@ -304,3 +304,13 @@ if (document.readyState === 'loading') {
 })();
 
 
+
+
+
+const cartIcon = document.querySelectorAll('.header__icon--cart');
+
+cartIcon.forEach((item) => {
+  item.addEventListener('click', () => {
+    document.querySelector('.cart-drawer').classList.add('cart-drawer--active');
+  });
+});

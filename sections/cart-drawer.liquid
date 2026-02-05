@@ -1,26 +1,76 @@
-<h1>This is Cart</h1>
-{% if cart.empty? %}
-<p>Your cart are empty</p>
-{% else %}
-{% form 'cart', cart %}
-    {% for item in cart.items %}
-        <img src="{{ item.image | image_url }}" alt="{{ item.title }}" width="200" height="200">
-        <h3>{{ item.product.title }}</h3>
-        <p>{{ item.variant.title }}</p>
-        <a href="{{ item.url_to_remove }}">Remove</a>
-        <p>{{ item.final_line_price | money }}</p>
-        <input type="number" name="updates[]" value="{{ item.quantity }}" min="0">
-    {% endfor %}
+{{ 'cart-drawer.css' | asset_url | stylesheet_tag: preload: true }}
+<script src="{{ 'cart-drawer.js' | asset_url }}" defer></script>
 
-    <p>Total Discounts: {{ cart.total_discounts | money }}</p>
-    <p>Total Price: {{ cart.total_price | money }}</p>
-    <button type="submit" name="checkout">Checkout</button>
-{% endform %}
-{% endif %}
+
+<div class="cart-drawer">
+  <div class="cart-drawer-box">
+    {% comment %} Header section {% endcomment %}
+    <header class="cart-drawer-header">
+      <h2>Your cart</h2>
+
+      <div class="cart-drawer-header-right">
+        <span class="cart-drawer-header-right-items">{{ cart.item_count }} items</span>
+
+        <button class="cart-drawer-header-right-close" type="button">
+          {{ 'icon-cross.svg' | inline_asset_content }}
+        </button>
+      </div>
+    </header>
+
+    {% form 'cart', cart, class: 'cart-drawer-form' %}
+      {% if cart.item_count == 0 %}
+        <p class="cart-drawer-empty">Your cart is empty</p>
+      {% else %}
+        <div class="cart-drawer-items">
+          {% for item in cart.items %}
+            <div class="cart-drawer-item" data-line-item-key="{{ item.key }}">
+              <div class="cart-drawer-item-image">
+                <img src="{{ item.image | img_url: '200px' }}" alt="{{ item.title }}" width="200" height="200">
+              </div>
+              <div class="cart-drawer-item-main">
+                <div class="cart-drawer-item-main-flex">
+                  <div class="cart-drawer-item-main-flex-left">
+                    <h3>
+                      <a href="{{ item.url }}">{{ item.product.title }}</a>
+                    </h3>
+                    <span>{{ item.variant.title }}</span>
+                    <div class="cart-drawer-quantity-selector">
+                      <button class="cart-drawer-quantity-selector-minus" type="button">
+                        {{ 'minus.svg' | inline_asset_content }}
+                      </button>
+                      <input type="text" readonly value="{{ item.quantity }}">
+                      <button class="cart-drawer-quantity-selector-plus" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M256 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 160-160 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l160 0 0 160c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160 160 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-160 0 0-160z"/></svg></button>
+                    </div>
+                  </div>
+                  <div class="cart-drawer-item-main-flex-right">
+                    <span>{{ item.final_line_price | money }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        <footer class="cart-drawer-footer">
+          {% if cart.total_discounts > 0 %}
+            <div class="cart-drawer-footer-row">
+              <h3>Discounts</h3>
+              <span>{{ cart.total_discounts | money }}</span>
+            </div>
+          {% endif %}
+          <div class="cart-drawer-footer-row">
+            <h3>Subtotal</h3>
+            <span>{{ cart.total_price | money }}</span>
+          </div>
+          <button type="submit" name="checkout" class="cart-drawer-button">Checkout</button>
+        </footer>
+      {% endif %}
+    {% endform %}
+  </div>
+</div>
 
 {% schema %}
 {
-    "name": "cart-drawer",
-    "settings": []
+  "name": "Cart drawer"
 }
 {% endschema %}
