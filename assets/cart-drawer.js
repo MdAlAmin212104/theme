@@ -1,3 +1,5 @@
+
+
 document.querySelectorAll('form[action*="/cart/add"]').forEach((form) => {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -21,6 +23,16 @@ document.querySelectorAll('form[action*="/cart/add"]').forEach((form) => {
 
 
 
-document.querySelector('.cart-drawer-header-right-close').addEventListener('click', () => {
-    document.querySelector('.cart-drawer').classList.remove('cart-drawer--active');
+function closeCartDrawer() {
+  document.querySelector('.cart-drawer').classList.remove('cart-drawer--active');
+}
+
+document.querySelectorAll(".cart-drawer-header-right-close").forEach((item) => {
+  item.addEventListener('click', closeCartDrawer);
+});
+
+document.querySelector(".cart-drawer").addEventListener('click', closeCartDrawer);
+
+document.querySelector(".cart-drawer-box").addEventListener('click', (e) => {
+  e.stopPropagation();
 });

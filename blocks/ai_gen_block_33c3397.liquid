@@ -1,7 +1,3 @@
-{% doc %}
-  @prompt
-    create feture product collection when I selected collection then display this rpdouct so display 8 product on grid also added add to cart button and other information create this section
-{% enddoc %}
 {% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
 
 {% style %}
@@ -326,7 +322,7 @@
           if (response.ok) {
             button.textContent = 'Added!';
             
-            const cartCountElements = document.querySelectorAll('[data-cart-count]');
+            const cartCountElements = document.querySelectorAll('.header__cart-count');
             if (cartCountElements.length > 0) {
               const cartResponse = await fetch('/cart.js');
               const cart = await cartResponse.json();

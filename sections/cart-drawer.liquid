@@ -1,7 +1,7 @@
 {{ 'cart-drawer.css' | asset_url | stylesheet_tag: preload: true }}
 <script src="{{ 'cart-drawer.js' | asset_url }}" defer></script>
 
-
+<div class="cart-drawer-overlay">
 <div class="cart-drawer">
   <div class="cart-drawer-box">
     {% comment %} Header section {% endcomment %}
@@ -67,6 +67,7 @@
       {% endif %}
     {% endform %}
   </div>
+</div>
 </div>
 
 {% schema %}
