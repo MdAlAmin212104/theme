@@ -1,17 +1,16 @@
 let cartDrawerTimer = null;
 
+// --- Open / Close Drawer ---
 function openCartDrawer() {
     const drawer = document.querySelector('.cart-drawer');
     if (!drawer) return;
 
     drawer.classList.add('cart-drawer--active');
 
-    // Clear previous timer if exists
-    if (cartDrawerTimer) {
-        clearTimeout(cartDrawerTimer);
-    }
+    // Clear previous timer
+    if (cartDrawerTimer) clearTimeout(cartDrawerTimer);
 
-    // Start new 5s timer
+    // Auto close after 5s
     cartDrawerTimer = setTimeout(() => {
         closeCartDrawer();
     }, 5000);
@@ -23,32 +22,34 @@ function closeCartDrawer() {
 
     drawer.classList.remove('cart-drawer--active');
 
-    // Clear timer when closed manually
     if (cartDrawerTimer) {
         clearTimeout(cartDrawerTimer);
         cartDrawerTimer = null;
     }
 }
 
+// --- Update Cart Drawer via AJAX ---
 async function updateCartDrawer() {
     const res = await fetch('/?section_id=cart-drawer');
     const html = await res.text();
     const div = document.createElement('div');
     div.innerHTML = html;
-    document.querySelector('.cart-drawer').innerHTML = div.querySelector('.cart-drawer').innerHTML;
+    const newDrawer = div.querySelector('.cart-drawer');
+    if (newDrawer) {
+        const currentDrawer = document.querySelector('.cart-drawer');
+        currentDrawer.innerHTML = newDrawer.innerHTML;
+    }
 }
 
+// --- Update Cart Icon via AJAX ---
 async function updateCartIcon() {
     try {
         const res = await fetch('/?sections=header');
         const data = await res.json();
-
         const parser = new DOMParser();
         const htmlDoc = parser.parseFromString(data['header'], 'text/html');
-
         const newIcon = htmlDoc.querySelector('#cart-icon-bubble');
         const currentIcon = document.querySelector('#cart-icon-bubble');
-
         if (newIcon && currentIcon) {
             currentIcon.innerHTML = newIcon.innerHTML;
         }
@@ -57,53 +58,84 @@ async function updateCartIcon() {
     }
 }
 
+// --- Event Delegation for Cart Drawer ---
+document.addEventListener('click', async (e) => {
+    const drawer = document.querySelector('.cart-drawer');
+    if (!drawer) return;
 
+    // Click overlay → close drawer
+    if (e.target.classList.contains('cart-drawer')) {
+        closeCartDrawer();
+    }
 
-document.querySelectorAll('form[action*="/cart/add"]').forEach((form) => {
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        let variantId = null;
+    // Click plus/minus buttons
+    const quantityButton = e.target.closest('.cart-drawer-quantity-selector button');
+    if (quantityButton) {
+        e.stopPropagation(); // Prevent closing drawer
 
-        // Try standard Shopify input first
-        const input = form.querySelector('input[name="id"]');
-        if (input) {
-            variantId = input.value;
-        } else {
-            // Fallback to button data attribute
-            const button = form.querySelector('[data-variant-id]');
-            if (button) {
-                variantId = button.dataset.variantId;
-            }
-        }
-        
-        await fetch(window.Shopify.routes.root + 'cart/add.js', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(variantId ? { id: variantId, quantity: 1 } : {})
-        }).then(async(res) => {
-            const respose = await res.json();
+        const rootItem = quantityButton.closest('[data-line-item-key]');
+        const key = rootItem.dataset.lineItemKey;
+        const input = rootItem.querySelector('input');
+        let currentQuantity = parseInt(input.value);
+
+        const isPlus = quantityButton.classList.contains('cart-drawer-quantity-selector-plus');
+        let newQuantity = isPlus ? currentQuantity + 1 : currentQuantity - 1;
+        if (newQuantity < 0) newQuantity = 0;
+
+        // Update quantity via AJAX
+        try {
+            const res = await fetch(window.Shopify.routes.root + 'cart/update.js', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ updates: { [key]: newQuantity } })
+            });
+            await res.json();
+
+            // Refresh drawer and icon
             await updateCartDrawer();
             await updateCartIcon();
-            openCartDrawer();
-            console.log(respose, "this is respose time");
-        }).catch((error) => {
-            console.error(error);
-        })
-    });
+
+        } catch (error) {
+            console.error("Error updating cart:", error);
+        }
+        return;
+    }
+
+    // Click cart icon → open drawer
+    const cartIcon = e.target.closest('.header__icon--cart');
+    if (cartIcon) {
+        openCartDrawer();
+    }
 });
 
+// --- Add-to-Cart via AJAX ---
+document.addEventListener('submit', async (e) => {
+    const form = e.target.closest('form[action*="/cart/add"]');
+    if (!form) return;
+    e.preventDefault();
 
+    let variantId = null;
+    const input = form.querySelector('input[name="id"]');
+    if (input) variantId = input.value;
+    else {
+        const button = form.querySelector('[data-variant-id]');
+        if (button) variantId = button.dataset.variantId;
+    }
 
+    try {
+        const res = await fetch(window.Shopify.routes.root + 'cart/add.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(variantId ? { id: variantId, quantity: 1 } : {})
+        });
+        await res.json();
 
+        // Refresh drawer and icon, then open
+        await updateCartDrawer();
+        await updateCartIcon();
+        openCartDrawer();
 
-document.querySelectorAll(".cart-drawer-header-right-close").forEach((item) => {
-  item.addEventListener('click', closeCartDrawer);
-});
-
-document.querySelector(".cart-drawer").addEventListener('click', closeCartDrawer);
-
-document.querySelector(".cart-drawer-box").addEventListener('click', (e) => {
-  e.stopPropagation();
+    } catch (error) {
+        console.error("Error adding to cart:", error);
+    }
 });

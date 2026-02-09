@@ -1,4 +1,14 @@
+
+
+document.addEventListener('click', (e) => {
+    if (e.target.closest('.header__icon--cart')) {
+        document.querySelector('.cart-drawer').classList.add('cart-drawer--active');
+    }
+});
+
+
 // Header Menu collapse and extends javascription code start
+
 class HeaderMenu {
     constructor() {
         this.header = document.querySelector('[data-section-type="header"]');
@@ -307,10 +317,3 @@ if (document.readyState === 'loading') {
 
 
 
-const cartIcon = document.querySelectorAll('.header__icon--cart');
-
-cartIcon.forEach((item) => {
-  item.addEventListener('click', () => {
-    document.querySelector('.cart-drawer').classList.add('cart-drawer--active');
-  });
-});
