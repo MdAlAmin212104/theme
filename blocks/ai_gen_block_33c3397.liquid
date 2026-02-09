@@ -118,7 +118,7 @@
     letter-spacing: 0.5px;
   }
 
-  .ai-featured-collection__add-to-cart-{{ ai_gen_id }} {
+  .add-to-cart-button {
     width: 100%;
     padding: 12px 24px;
     background-color: {{ block.settings.button_background }};
@@ -131,11 +131,11 @@
     margin-top: auto;
   }
 
-  .ai-featured-collection__add-to-cart-{{ ai_gen_id }}:hover {
+  .add-to-cart-button:hover {
     background-color: {{ block.settings.button_hover_background }};
   }
 
-  .ai-featured-collection__add-to-cart-{{ ai_gen_id }}:disabled {
+  .add-to-cart-button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }
@@ -246,8 +246,9 @@
               {% endif %}
 
               {% if block.settings.show_add_to_cart %}
+                {% form 'product', product %}
                 <button
-                  class="ai-featured-collection__add-to-cart-{{ ai_gen_id }}"
+                  class="add-to-cart-button"
                   data-product-id="{{ product.id }}"
                   data-variant-id="{{ product.selected_or_first_available_variant.id }}"
                   {% unless product.available %}disabled{% endunless %}
@@ -258,7 +259,9 @@
                     {{ block.settings.sold_out_text }}
                   {% endif %}
                 </button>
+                {% endform %}
               {% endif %}
+            
             </div>
           </div>
         {% endfor %}
@@ -281,7 +284,7 @@
   {% endif %}
 </featured-collection-{{ ai_gen_id }}>
 
-<script>
+{% comment %} <script>
   (function() {
     class FeaturedCollection{{ ai_gen_id }} extends HTMLElement {
       constructor() {
@@ -289,7 +292,7 @@
       }
 
       connectedCallback() {
-        this.addToCartButtons = this.querySelectorAll('.ai-featured-collection__add-to-cart-{{ ai_gen_id }}');
+        this.addToCartButtons = this.querySelectorAll('.add-to-cart-button');
         this.setupEventListeners();
       }
 
@@ -350,7 +353,7 @@
 
     customElements.define('featured-collection-{{ ai_gen_id }}', FeaturedCollection{{ ai_gen_id }});
   })();
-</script>
+</script> {% endcomment %}
 
 {% schema %}
 {

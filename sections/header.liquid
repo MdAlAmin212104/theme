@@ -177,12 +177,7 @@
       {% endif %}
 
       <!-- Cart -->
-      <span class="header__icon header__icon--cart">
-        {{ 'icon-cart.svg' | inline_asset_content }}
-        {% if cart.item_count > 0 %}
-          <span class="header__cart-count">{{ cart.item_count }}</span>
-        {% endif %}
-      </span>
+      {% render 'cart-icon' %}
 
       <!-- Account -->
       {% if shop.customer_accounts_enabled %}

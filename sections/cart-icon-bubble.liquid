@@ -1,0 +1,10 @@
+{%- assign count = cart.item_count -%}
+
+<div id="cart-icon-bubble">
+  <span class="header__icon header__icon--cart">
+    {{ 'icon-cart.svg' | inline_asset_content }}
+    {% if count > 0 %}
+      <span class="header__cart-count">{{ count }}</span>
+    {% endif %}
+  </span>
+</div>
