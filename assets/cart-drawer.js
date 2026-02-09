@@ -1,4 +1,4 @@
-let cartDrawerTimer = null;
+
 
 // --- Open / Close Drawer ---
 function openCartDrawer() {
@@ -6,14 +6,6 @@ function openCartDrawer() {
     if (!drawer) return;
 
     drawer.classList.add('cart-drawer--active');
-
-    // Clear previous timer
-    if (cartDrawerTimer) clearTimeout(cartDrawerTimer);
-
-    // Auto close after 5s
-    cartDrawerTimer = setTimeout(() => {
-        closeCartDrawer();
-    }, 5000);
 }
 
 function closeCartDrawer() {
@@ -21,23 +13,21 @@ function closeCartDrawer() {
     if (!drawer) return;
 
     drawer.classList.remove('cart-drawer--active');
-
-    if (cartDrawerTimer) {
-        clearTimeout(cartDrawerTimer);
-        cartDrawerTimer = null;
-    }
 }
 
 // --- Update Cart Drawer via AJAX ---
 async function updateCartDrawer() {
-    const res = await fetch('/?section_id=cart-drawer');
-    const html = await res.text();
-    const div = document.createElement('div');
-    div.innerHTML = html;
-    const newDrawer = div.querySelector('.cart-drawer');
-    if (newDrawer) {
-        const currentDrawer = document.querySelector('.cart-drawer');
-        currentDrawer.innerHTML = newDrawer.innerHTML;
+    try {
+        const res = await fetch('/?section_id=cart-drawer');
+        const html = await res.text();
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        const newDrawer = div.querySelector('.cart-drawer');
+        if (newDrawer) {
+            document.querySelector('.cart-drawer').innerHTML = newDrawer.innerHTML;
+        }
+    } catch (err) {
+        console.error("Error updating cart drawer:", err);
     }
 }
 
@@ -53,57 +43,65 @@ async function updateCartIcon() {
         if (newIcon && currentIcon) {
             currentIcon.innerHTML = newIcon.innerHTML;
         }
-    } catch (error) {
-        console.error('Cart icon update failed:', error);
+    } catch (err) {
+        console.error("Error updating cart icon:", err);
     }
 }
 
-// --- Event Delegation for Cart Drawer ---
+// --- Event Delegation for Drawer ---
 document.addEventListener('click', async (e) => {
     const drawer = document.querySelector('.cart-drawer');
     if (!drawer) return;
 
-    // Click overlay → close drawer
-    if (e.target.classList.contains('cart-drawer')) {
-        closeCartDrawer();
-    }
+    // Quantity plus/minus
+    const qtyBtn = e.target.closest('.cart-drawer-quantity-selector button');
+    if (qtyBtn) {
+        e.stopPropagation();
+        const item = qtyBtn.closest('[data-line-item-key]');
+        const key = item.dataset.lineItemKey;
+        const input = item.querySelector('input');
+        let qty = parseInt(input.value);
+        qty = qtyBtn.classList.contains('cart-drawer-quantity-selector-plus') ? qty + 1 : qty - 1;
+        if (qty < 0) qty = 0;
 
-    // Click plus/minus buttons
-    const quantityButton = e.target.closest('.cart-drawer-quantity-selector button');
-    if (quantityButton) {
-        e.stopPropagation(); // Prevent closing drawer
-
-        const rootItem = quantityButton.closest('[data-line-item-key]');
-        const key = rootItem.dataset.lineItemKey;
-        const input = rootItem.querySelector('input');
-        let currentQuantity = parseInt(input.value);
-
-        const isPlus = quantityButton.classList.contains('cart-drawer-quantity-selector-plus');
-        let newQuantity = isPlus ? currentQuantity + 1 : currentQuantity - 1;
-        if (newQuantity < 0) newQuantity = 0;
-
-        // Update quantity via AJAX
         try {
-            const res = await fetch(window.Shopify.routes.root + 'cart/update.js', {
+            await fetch(window.Shopify.routes.root + 'cart/update.js', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ updates: { [key]: newQuantity } })
+                body: JSON.stringify({ updates: { [key]: qty } })
             });
-            await res.json();
-
-            // Refresh drawer and icon
             await updateCartDrawer();
             await updateCartIcon();
-
-        } catch (error) {
-            console.error("Error updating cart:", error);
+        } catch (err) {
+            console.error("Error updating quantity:", err);
         }
         return;
     }
 
-    // Click cart icon → open drawer
-    const cartIcon = e.target.closest('.header__icon--cart');
-    if (cartIcon) {
+    // Remove item via AJAX
+    const removeBtn = e.target.closest('.cart-drawer-item a[href*="/cart/change"]') || e.target.closest('.cart-drawer-item a[href*="/cart"]');
+    if (removeBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const item = removeBtn.closest('[data-line-item-key]');
+        const key = item.dataset.lineItemKey;
+
+        try {
+            await fetch(window.Shopify.routes.root + 'cart/update.js', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ updates: { [key]: 0 } }) // quantity 0 = remove
+            });
+            await updateCartDrawer();
+            await updateCartIcon();
+        } catch (err) {
+            console.error("Error removing item:", err);
+        }
+        return;
+    }
+
+    // Cart icon click → open drawer
+    if (e.target.closest('.header__icon--cart')) {
         openCartDrawer();
     }
 });
@@ -123,19 +121,30 @@ document.addEventListener('submit', async (e) => {
     }
 
     try {
-        const res = await fetch(window.Shopify.routes.root + 'cart/add.js', {
+        await fetch(window.Shopify.routes.root + 'cart/add.js', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(variantId ? { id: variantId, quantity: 1 } : {})
         });
-        await res.json();
-
-        // Refresh drawer and icon, then open
         await updateCartDrawer();
         await updateCartIcon();
         openCartDrawer();
+    } catch (err) {
+        console.error("Error adding to cart:", err);
+    }
+});
 
-    } catch (error) {
-        console.error("Error adding to cart:", error);
+
+// Close drawer when clicking the "X" button inside drawer
+document.addEventListener('click', (e) => {
+    const closeBtn = e.target.closest('.cart-drawer-header-right-close');
+    if (closeBtn) {
+        e.preventDefault();
+        closeCartDrawer();
+    }
+
+    // Close drawer when clicking outside the drawer box (overlay)
+    if (e.target.classList.contains('cart-drawer-overlay')) {
+        closeCartDrawer();
     }
 });
