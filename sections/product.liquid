@@ -5,6 +5,8 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/product
 {% endcomment %}
 
+{{ 'Details.css' | asset_url | stylesheet_tag: preload: true  }}
+
 <div class="product-page">
   <div class="product-gallery">
     <div class="main-image">
@@ -28,16 +30,45 @@
   </div>
 
   <div class="product-details">
+    {% if product.vendor %}
+      <p>{{product.vendor}}</p>
+    {% endif %}
     <h1 class="product-title">{{ product.title }}</h1>
     <div class="product-price">{{ product.price | money }}</div>
-    <div class="product-description">{{ product.description }}</div>
+    
 
     {% form 'product', product, class: 'product-form' %}
       {% assign current_variant = product.selected_or_first_available_variant %}
-
+      <input id="product-id" type="hidden" id="name" value="{{ product.selected_or_first_available_variant.id }}">
       {% if product.variants.size > 1 %}
+      <div class="product-options">
+        {% for option in product.options_with_values %}
+          <fieldset>
+            <legend>{{ option.name }}</legend>
+            {% for value in option.values %}
+              <div class="variant-value"> 
+                <input
+                  {% if option.selected_value == value %}checked{% endif %}
+                  type="radio"
+                  name="{{ option.name }}"
+                  value="{{ value }}"
+                  id="{{ option.name | handleize  }}-{{ value | handleize  }}"
+                />
+                <label class="label-value" for="{{ option.name | handleize  }}-{{ value | handleize  }}">
+                  {{ value }}
+                </label>  
+              </div>
+            {% endfor %}
+
+          </fieldset>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+      {% comment %} {% if product.variants.size > 1 %}
+        {% for option in product.options %}
         <div class="variant-selector">
-          <label for="variant-select">Variant:</label>
+          <label for="variant-select">:</label>
           <select name="id" id="variant-select">
             {% for variant in product.variants %}
               <option
@@ -51,7 +82,8 @@
             {% endfor %}
           </select>
         </div>
-      {% endif %}
+      {% endfor %}
+      {% endif %} {% endcomment %}
 
       <div class="quantity-selector">
         <label for="quantity">Quantity:</label>
@@ -61,209 +93,18 @@
       <button type="submit" class="add-to-cart-btn">Add to Cart</button>
       {{ form | payment_button }}
     {% endform %}
+    <div class="product-description">{{ product.description }}</div>
   </div>
 </div>
 
-<style>
-  .product-page {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-
-  .product-gallery {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .main-image {
-    margin-bottom: 1rem;
-  }
-
-  .product-main-image {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-
-  .image-slider {
-    display: flex;
-    align-items: center;
-    position: relative;
-  }
-
-  .slider-container {
-    display: flex;
-    overflow: hidden;
-    width: 100%;
-    scroll-behavior: smooth;
-  }
-
-  .slider-image {
-    flex: 0 0 100px;
-    margin-right: 0.5rem;
-    opacity: 0.6;
-    transition: opacity 0.3s;
-    cursor: pointer;
-  }
-
-  .slider-image.active {
-    opacity: 1;
-  }
-
-  .product-slider-image {
-    width: 100%;
-    height: auto;
-    border-radius: 4px;
-  }
-
-  .slider-btn {
-    background: #f0f0f0;
-    border: none;
-    padding: 0.5rem;
-    cursor: pointer;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    transition: background 0.3s;
-  }
-
-  .slider-btn:hover {
-    background: #e0e0e0;
-  }
-
-  .product-details {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .product-title {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    color: #333;
-  }
-
-  .product-price {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #007bff;
-    margin-bottom: 1rem;
-  }
-
-  .product-description {
-    margin-bottom: 2rem;
-    line-height: 1.6;
-    color: #666;
-  }
-
-  .product-form {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .variant-selector,
-  .quantity-selector {
-    margin-bottom: 1rem;
-  }
-
-  label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: bold;
-  }
-
-  select,
-  input[type="number"] {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-  }
-
-  .add-to-cart-btn {
-    background: #28a745;
-    color: white;
-    border: none;
-    padding: 1rem;
-    font-size: 1.1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background 0.3s;
-    margin-bottom: 1rem;
-  }
-
-  .add-to-cart-btn:hover {
-    background: #218838;
-  }
-
-  @media (max-width: 768px) {
-    .product-page {
-      grid-template-columns: 1fr;
-      gap: 1rem;
-    }
-
-    .product-title {
-      font-size: 1.5rem;
-    }
-
-    .product-price {
-      font-size: 1.2rem;
-    }
-  }
-</style>
+<script src="{{ 'Details.js' | asset_url }}"></script>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const sliderContainer = document.getElementById('sliderContainer');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const sliderImages = document.querySelectorAll('.slider-image');
-    const mainImage = document.querySelector('.product-main-image');
+  const product = {{ product | json }}
+  console.log(product);
 
-    if (sliderContainer && sliderImages.length > 0) {
-      let currentIndex = 0;
+  
 
-      function updateSlider() {
-        sliderImages.forEach((img, index) => {
-          img.classList.toggle('active', index === currentIndex);
-        });
-        const scrollAmount = currentIndex * 105; // 100px width + 5px margin
-        sliderContainer.scrollLeft = scrollAmount;
-      }
-
-      function changeImage(index) {
-        currentIndex = index;
-        const newImageSrc = sliderImages[index].querySelector('img').src;
-        mainImage.src = newImageSrc;
-        updateSlider();
-      }
-
-      sliderImages.forEach((img, index) => {
-        img.addEventListener('click', () => changeImage(index));
-      });
-
-      prevBtn.addEventListener('click', () => {
-        currentIndex = currentIndex > 0 ? currentIndex - 1 : sliderImages.length - 1;
-        changeImage(currentIndex);
-      });
-
-      nextBtn.addEventListener('click', () => {
-        currentIndex = currentIndex < sliderImages.length - 1 ? currentIndex + 1 : 0;
-        changeImage(currentIndex);
-      });
-
-      updateSlider();
-    }
-  });
 </script>
 
 {% schema %}
