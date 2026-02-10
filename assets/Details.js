@@ -39,31 +39,36 @@ document.addEventListener('DOMContentLoaded', function() {
 
       updateSlider();
     }
-  });
-
+});
 
 
 document.querySelectorAll('.product-options input[type="radio"]').forEach(radio => {
-    radio.addEventListener('change', () => {
-        var selectedOption = [];
-        // find selected opitons
-        document.querySelectorAll('.product-options input[type="radio"]:checked').forEach(radio => {
-            selectedOption.push(radio.value);
-        });
+  radio.addEventListener('change', () => {
 
-        // find matching variant
-        var matchVariant = product.variants.find(variant => {
-            for(var i = 0; i < selectedOption.length; i++) {
-                if(variant.options[i] !== selectedOption[i]) {
-                    return false;
-                }
-            }
-            return true;
-        });
+    let selectedOptions = [];
 
-        document.querySelector('#product-id').value = matchVariant.id;
-        
+    // collect options in correct order
+    document.querySelectorAll('.product-options fieldset').forEach(fieldset => {
+      const checked = fieldset.querySelector('input[type="radio"]:checked');
+      if (checked) {
+        selectedOptions.push(checked.value);
+      }
+    });
 
+    console.log(selectedOptions );
 
-    })
-  })
+    // find matching variant
+    let matchVariant = product.variants.find(variant => {
+      for (let i = 0; i < selectedOptions.length; i++) {
+        if (variant.options[i] !== selectedOptions[i]) {
+          return false;
+        }
+      }
+      return true;
+    });
+
+    if (matchVariant) {
+      document.querySelector('#product-id').value = matchVariant.id;
+    }
+  });
+});

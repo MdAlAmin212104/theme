@@ -38,8 +38,12 @@
     
 
     {% form 'product', product, class: 'product-form' %}
-      {% assign current_variant = product.selected_or_first_available_variant %}
-      <input id="product-id" type="hidden" id="name" value="{{ product.selected_or_first_available_variant.id }}">
+      <input
+        type="hidden"
+        name="id"
+        id="product-id"
+        value="{{ product.selected_or_first_available_variant.id }}"
+      >
       {% if product.variants.size > 1 %}
       <div class="product-options">
         {% for option in product.options_with_values %}
@@ -89,7 +93,6 @@
         <label for="quantity">Quantity:</label>
         <input type="number" name="quantity" id="quantity" min="1" value="1">
       </div>
-
       <button type="submit" class="add-to-cart-btn">Add to Cart</button>
       {{ form | payment_button }}
     {% endform %}
@@ -97,15 +100,11 @@
   </div>
 </div>
 
-<script src="{{ 'Details.js' | asset_url }}"></script>
-
 <script>
-  const product = {{ product | json }}
-  console.log(product);
-
-  
-
+  const product = {{ product | json }};
 </script>
+
+<script src="{{ 'Details.js' | asset_url }}"></script>
 
 {% schema %}
 {
