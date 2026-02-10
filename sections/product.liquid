@@ -33,9 +33,23 @@
     {% if product.vendor %}
       <p>{{product.vendor}}</p>
     {% endif %}
-    <h1 class="product-title">{{ product.title }}</h1>
-    <div class="product-price">{{ product.price | money }}</div>
     
+    <h1 class="product-title">{{ product.title }}</h1>
+    
+    <div class="product-prices">
+  {% assign current_variant = product.selected_or_first_available_variant %}
+
+  {% if current_variant.compare_at_price > current_variant.price %}
+    <p class="product-compare-price">
+      {{ current_variant.compare_at_price | money }}
+    </p>
+  {% endif %}
+
+  <p class="product-price">
+    {{ current_variant.price | money }}
+  </p>
+</div>
+
 
     {% form 'product', product, class: 'product-form' %}
       <input
@@ -103,7 +117,7 @@
 <script>
   const product = {{ product | json }};
 </script>
-
+<script src="https://cdn.jsdelivr.net/npm/url-parse@1.5.10/dist/url-parse.min.js"></script>
 <script src="{{ 'Details.js' | asset_url }}"></script>
 
 {% schema %}

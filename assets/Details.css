@@ -1,3 +1,21 @@
+.product-prices {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.product-compare-price {
+  text-decoration: line-through;
+  color: #999;
+  font-size: 1rem;
+  margin-right: 5px;
+}
+.product-price {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #007bff;
+}
+
 .variant-value {
   margin: 10px 0;
 }

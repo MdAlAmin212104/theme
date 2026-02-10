@@ -55,7 +55,6 @@ document.querySelectorAll('.product-options input[type="radio"]').forEach(radio 
       }
     });
 
-    console.log(selectedOptions );
 
     // find matching variant
     let matchVariant = product.variants.find(variant => {
@@ -70,5 +69,23 @@ document.querySelectorAll('.product-options input[type="radio"]').forEach(radio 
     if (matchVariant) {
       document.querySelector('#product-id').value = matchVariant.id;
     }
+
+    var url = new URL(window.location.href);
+    url.searchParams.set('variant', matchVariant.id);
+    window.history.pushState({}, '', url);
+
+
+    if (matchVariant) {
+  document.querySelector('#product-id').value = matchVariant.id;
+
+  document.querySelector('#product-price').textContent =
+    Shopify.formatMoney(matchVariant.price);
+
+  if (matchVariant.compare_at_price > matchVariant.price) {
+    document.querySelector('#product-compare-price').textContent =
+      Shopify.formatMoney(matchVariant.compare_at_price);
+  }
+}
+
   });
 });
