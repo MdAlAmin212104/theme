@@ -58,6 +58,7 @@
   overflow: hidden;
   width: 100%;
   scroll-behavior: smooth;
+  max-width: 650px;
 }
 
 .slider-image {
