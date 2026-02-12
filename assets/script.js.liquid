@@ -1,4 +1,9 @@
-var formatMoney = function(cents, format) {
+var Shopify = Shopify || {};
+// ---------------------------------------------------------------------------
+// Money format handler
+// ---------------------------------------------------------------------------
+Shopify.money_format = "${{amount}}";
+Shopify.formatMoney = function(cents, format) {
   if (typeof cents == 'string') { cents = cents.replace('.',''); }
   var value = '';
   var placeholderRegex = /\{\{\s*(\w+)\s*\}\}/;
@@ -24,13 +29,7 @@ var formatMoney = function(cents, format) {
     return dollars + cents;
   }
 
-  var match = formatString.match(placeholderRegex);
-
-if (!match) {
-  return cents;
-}
-
-switch(match[1]) {
+  switch(formatString.match(placeholderRegex)[1]) {
     case 'amount':
       value = formatWithDelimiters(cents, 2);
       break;
