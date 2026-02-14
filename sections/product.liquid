@@ -6,6 +6,7 @@
 {% endcomment %}
 
 {{ 'Details.css' | asset_url | stylesheet_tag: preload: true  }}
+<script src="{{ 'script.js' | asset_url }}" defer></script>
 
 <div class="product-page">
   <div class="product-gallery">
@@ -36,18 +37,9 @@
     
     <h1 class="product-title">{{ product.title }}</h1>
     
-    <div class="product-prices">
-  {% assign current_variant = product.selected_or_first_available_variant %}
-
-  {% if current_variant.compare_at_price > current_variant.price %}
-    <p class="product-compare-price">
-      {{ current_variant.compare_at_price | money }}
-    </p>
-  {% endif %}
-
-  <p class="product-price">
-    {{ current_variant.price | money }}
-  </p>
+<div class="product-prices">
+  <p class="product-compare-price">{{ product.selected_or_first_available_variant.compare_at_price }}</p>
+  <p class="product-price">{{ product.selected_or_first_available_variant.price }}</p>
 </div>
 
 
