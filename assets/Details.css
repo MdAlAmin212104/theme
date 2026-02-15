@@ -1,3 +1,18 @@
+ul.product-image-thumbnails {
+  display: flex;
+  margin-top: 20px;
+  gap: 20px;
+  justify-content: flex-start;
+  padding-left: 0;
+}
+li.thumbnail-item {
+    list-style: none;
+}
+li.thumbnail-item.selected {
+    border:2px solid #007bff;
+    opacity: 1;
+}
+ 
 .product-prices {
   display: flex;
   gap: 5px;

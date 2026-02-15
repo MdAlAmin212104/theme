@@ -6,28 +6,36 @@
 {% endcomment %}
 
 {{ 'Details.css' | asset_url | stylesheet_tag: preload: true  }}
-<script src="{{ 'script.js' | asset_url }}" defer></script>
+
+
+
+{% assign featured = product.selected_or_first_available_variant.featured_image %}
+{% assign featured_image = product.featured_image %}
 
 <div class="product-page">
   <div class="product-gallery">
-    <div class="main-image">
-      {% if product.featured_image %}
-        {% render 'image', class: 'product-main-image', image: product.featured_image %}
-      {% endif %}
-    </div>
-    {% if product.images.size > 1 %}
-      <div class="image-slider">
-        <button class="slider-btn prev-btn" id="prevBtn"><</button>
-        <div class="slider-container" id="sliderContainer">
-          {% for image in product.images %}
-            <div class="slider-image {% if forloop.first %}active{% endif %}">
-              {% render 'image', class: 'product-slider-image', image: image %}
-            </div>
-          {% endfor %}
-        </div>
-        <button class="slider-btn next-btn" id="nextBtn">></button>
-      </div>
+    {% if featured %}
+      <img src="{{ featured | image_url: width: 800, height: 800, crop: 'center' }}" alt="{{ product.title }}" class="product-main-image" width="400", height="400">
+    {% else %}
+      <img src="{{ featured_image | image_url: width: 800, height: 800, crop: 'center' }}" alt="{{ product.title }}" class="product-main-image" width="400", height="400">
     {% endif %}
+
+    <ul class="product-image-thumbnails">
+      {% for image in product.images %}
+        <li class="thumbnail-item {% if image == featured %}selected{% endif %}">
+        <img 
+          src="{{ image | image_url: width: 100, height: 100, crop: 'center' }}"
+          data-large="{{ image | image_url: width: 800 }}"
+          alt="{{ product.title }} thumbnail"
+          class="thumbnail-image"
+          width="100"
+          height="100"
+        >
+      </li>
+
+      {% endfor %}
+    </ul>
+
   </div>
 
   <div class="product-details">
@@ -75,26 +83,6 @@
       </div>
     {% endif %}
 
-      {% comment %} {% if product.variants.size > 1 %}
-        {% for option in product.options %}
-        <div class="variant-selector">
-          <label for="variant-select">:</label>
-          <select name="id" id="variant-select">
-            {% for variant in product.variants %}
-              <option
-                value="{{ variant.id }}"
-                {% if variant == current_variant %}
-                  selected="selected"
-                {% endif %}
-              >
-                {{ variant.title }} - {{ variant.price | money }}
-              </option>
-            {% endfor %}
-          </select>
-        </div>
-      {% endfor %}
-      {% endif %} {% endcomment %}
-
       <div class="quantity-selector">
         <label for="quantity">Quantity:</label>
         <input type="number" name="quantity" id="quantity" min="1" value="1">
@@ -110,9 +98,9 @@
   const product = {{ product | json }};
   var shopMoneyFormat = "{{ shop.money_format }}";
 </script>
-<script src="https://cdn.jsdelivr.net/npm/url-parse@1.5.10/dist/url-parse.min.js"></script>
-<script src="{{ 'Details.js' | asset_url }}"></script>
- 
+
+<script src="https://cdn.jsdelivr.net/npm/url-parse@1.5.10/dist/url-parse.min.js" defer></script>
+<script src="{{ 'Details.js' | asset_url }}" defer></script>
 
 {% schema %}
 {

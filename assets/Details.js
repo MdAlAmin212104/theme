@@ -149,3 +149,15 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 });
+
+
+document.querySelectorAll('.product-image-thumbnails li').forEach(li => {
+  li.addEventListener('click', () => {
+    const newSrc = li.querySelector('img').dataset.large;
+    document.querySelector('.product-main-image').src = newSrc;
+    document.querySelectorAll('.product-image-thumbnails li.selected').forEach(thumbnail => {
+      thumbnail.classList.remove('selected');
+    });
+    li.classList.add('selected');
+  }); 
+});
