@@ -146,6 +146,32 @@ document.addEventListener('DOMContentLoaded', function () {
           comparePriceEl.style.display = 'none';
         }
       }
+
+      // change main image if variant has featured image
+      if (matchVariant.featured_image) {
+        const newSrc = matchVariant.featured_image.src.replace(/\.\w+$/, '_800x800$&');
+
+        if (mainImage) {
+          mainImage.src = newSrc;
+        }
+
+        // Update selected thumbnail
+        document.querySelectorAll('.product-image-thumbnails li').forEach(li => {
+          const thumbImg = li.querySelector('img');
+          if (!thumbImg) return;
+
+          const largeSrc = thumbImg.dataset.large;
+
+          if (largeSrc && largeSrc.includes(matchVariant.featured_image.src)) {
+            // Remove selected from all
+            document.querySelectorAll('.product-image-thumbnails li.selected')
+              .forEach(el => el.classList.remove('selected'));
+
+            // Add selected to matched thumbnail
+            li.classList.add('selected');
+          }
+        });
+      }
     });
   });
 });
@@ -159,5 +185,5 @@ document.querySelectorAll('.product-image-thumbnails li').forEach(li => {
       thumbnail.classList.remove('selected');
     });
     li.classList.add('selected');
-  }); 
+  });
 });
