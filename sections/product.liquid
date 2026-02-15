@@ -85,9 +85,19 @@
 
       <div class="quantity-selector">
         <label for="quantity">Quantity:</label>
-        <input type="number" name="quantity" id="quantity" min="1" value="1">
+        <div class="quantity-controls">
+          <button type="button" class="quantity-btn" id="decrease-quantity">-</button>
+          <input type="number" name="quantity" id="quantity" min="1" value="1">
+          <button type="button" class="quantity-btn" id="increase-quantity">+</button>
+        </div>
       </div>
-      <button type="submit" class="add-to-cart-btn">Add to Cart</button>
+      <button type="submit" class="add-to-cart-btn" id="add-to-cart" {% unless product.selected_or_first_available_variant %}disabled{% endunless %}>
+        {% if product.selected_or_first_available_variant %}
+        Add to 
+        {% else %}
+        Sold Out
+        {% endif %}
+      </button>
       {{ form | payment_button }}
     {% endform %}
     <div class="product-description">{{ product.description }}</div>

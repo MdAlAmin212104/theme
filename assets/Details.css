@@ -1,3 +1,71 @@
+.quantity-selector {
+  margin-bottom: 1.5rem;
+}
+
+.quantity-selector label {
+  display: block;
+  margin-bottom: 0.6rem;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #333;
+}
+
+.quantity-controls {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  transition: all 0.3s ease;
+}
+
+.quantity-controls:focus-within {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.quantity-btn {
+  background: #f8f9fa;
+  border: none;
+  width: 45px;
+  height: 45px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.1s ease;
+}
+
+.quantity-btn:hover {
+  background: #e9ecef;
+}
+
+.quantity-btn:active {
+  transform: scale(0.95);
+}
+
+.quantity-controls input[type="number"] {
+  width: 60px;
+  height: 45px;
+  border: none;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  outline: none;
+}
+
+/* Remove arrows (Chrome, Safari, Edge) */
+.quantity-controls input::-webkit-outer-spin-button,
+.quantity-controls input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Remove arrows (Firefox) */
+.quantity-controls input[type=number] {
+  -moz-appearance: textfield;
+}
+
 ul.product-image-thumbnails {
   display: flex;
   margin-top: 20px;

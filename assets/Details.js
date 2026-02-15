@@ -171,6 +171,24 @@ document.addEventListener('DOMContentLoaded', function () {
             li.classList.add('selected');
           }
         });
+
+        // change button state
+        const addToCartBtn = document.getElementById('#add-to-cart');
+        if (addToCartBtn) {
+          if (matchVariant.available) {
+            addToCartBtn.disabled = false;
+            addToCartBtn.textContent = 'Add to Cart';
+          } else {
+            addToCartBtn.disabled = true;
+            addToCartBtn.textContent = 'Sold Out';
+          }
+        }
+
+        // Update quantity input max
+
+
+
+
       }
     });
   });
