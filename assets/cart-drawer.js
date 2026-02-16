@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-
-
 // --- Open / Close Drawer ---
 function openCartDrawer() {
     const drawer = document.querySelector('.cart-drawer');
@@ -176,7 +173,6 @@ document.addEventListener('click', (e) => {
         closeCartDrawer();
     }
 });
-=======
 
 
 // --- Open / Close Drawer ---
@@ -350,4 +346,3 @@ document.addEventListener('click', (e) => {
         closeCartDrawer();
     }
 });
->>>>>>> 0e2544f4301bcf6094a40c1d4997574d321b29e7
