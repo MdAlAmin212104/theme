@@ -114,24 +114,40 @@ document.addEventListener('submit', async (e) => {
 
     let variantId = null;
     const input = form.querySelector('input[name="id"]');
-    if (input) variantId = input.value;
+    if (input) variantId = parseInt(input.value);
     else {
         const button = form.querySelector('[data-variant-id]');
-        if (button) variantId = button.dataset.variantId;
+        if (button) variantId = parseInt(button.dataset.variantId);
     }
 
-     // --- NEW: Get quantity from the form ---
-    let quantity = 1; // default
+    // Get quantity
+    let quantity = 1;
     const qtyInput = form.querySelector('input[name="quantity"]');
     if (qtyInput) {
-        quantity = parseInt(qtyInput.value) || 1; // fallback to 1
+        quantity = parseInt(qtyInput.value) || 1;
+    }
+    // --- Inventory check ---
+    if (window.productVariants && variantId) {
+        const variant = window.productVariants.find(v => v.id === variantId);
+        
+        console.log(variant)
+        if (variant && variant.inventory_management && !variant.inventory_policy) {
+            const availableQty = variant.inventory_quantity;
+            console.log(availableQty);
+
+            if (quantity > availableQty) {
+                alert(`Only ${availableQty} items available in stock.`);
+                qtyInput.value = availableQty > 0 ? availableQty : 1;
+                return;
+            }
+        }
     }
 
     try {
         await fetch(window.Shopify.routes.root + 'cart/add.js', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(variantId ? { id: variantId, quantity } : { quantity })
+            body: JSON.stringify({ id: variantId, quantity })
         });
         await updateCartDrawer();
         await updateCartIcon();
