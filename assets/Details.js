@@ -3,6 +3,7 @@ window.Shopify = window.Shopify || {};
 // Default money format
 Shopify.money_format = "${{amount}}";
 
+
 // Safe money formatter
 Shopify.formatMoney = function (cents, format) {
   if (typeof cents === "string") {

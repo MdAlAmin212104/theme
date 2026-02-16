@@ -46,8 +46,12 @@
     <h1 class="product-title">{{ product.title }}</h1>
     
 <div class="product-prices">
-  <p class="product-compare-price">{{ product.selected_or_first_available_variant.compare_at_price }}</p>
-  <p class="product-price">{{ product.selected_or_first_available_variant.price }}</p>
+  <p class="product-compare-price">
+    {{ product.selected_or_first_available_variant.compare_at_price | money }}
+  </p>
+  <p class="product-price">
+    {{ product.selected_or_first_available_variant.price | money }}
+  </p>
 </div>
 
 
@@ -98,7 +102,9 @@
         Sold Out
         {% endif %}
       </button>
+      {% if product.selected_or_first_available_variant %}
       {{ form | payment_button }}
+      {% endif %}
     {% endform %}
     <div class="product-description">{{ product.description }}</div>
   </div>
@@ -107,6 +113,18 @@
 <script>
   const product = {{ product | json }};
   var shopMoneyFormat = "{{ shop.money_format }}";
+  window.productVariants = {{ product.variants | json }};
+  window.productVariants = [
+  {% for variant in product.variants %}
+    {
+      id: {{ variant.id }},
+      inventory_quantity: {{ variant.inventory_quantity | default: 0 }},
+      inventory_management: {{ variant.inventory_management | json }},
+      inventory_policy: {{ variant.inventory_policy | json }}
+    }{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+];
+
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/url-parse@1.5.10/dist/url-parse.min.js" defer></script>
