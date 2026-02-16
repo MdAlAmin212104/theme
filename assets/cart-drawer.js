@@ -120,11 +120,18 @@ document.addEventListener('submit', async (e) => {
         if (button) variantId = button.dataset.variantId;
     }
 
+     // --- NEW: Get quantity from the form ---
+    let quantity = 1; // default
+    const qtyInput = form.querySelector('input[name="quantity"]');
+    if (qtyInput) {
+        quantity = parseInt(qtyInput.value) || 1; // fallback to 1
+    }
+
     try {
         await fetch(window.Shopify.routes.root + 'cart/add.js', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(variantId ? { id: variantId, quantity: 1 } : {})
+            body: JSON.stringify(variantId ? { id: variantId, quantity } : { quantity })
         });
         await updateCartDrawer();
         await updateCartIcon();

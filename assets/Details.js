@@ -183,15 +183,36 @@ document.addEventListener('DOMContentLoaded', function () {
             addToCartBtn.textContent = 'Sold Out';
           }
         }
-
-        // Update quantity input max
-
-
-
-
       }
+
+
     });
   });
+
+  // Update quantity input max
+  document.querySelector('#increase-quantity').addEventListener('click', () => {
+    var currentValue = parseInt(document.querySelector('#quantity').value);
+    
+    document.querySelector('#quantity').value = currentValue + 1; 
+    
+    if (currentValue + 1 > 99) {
+      document.querySelector('#quantity').value = 99;
+    }
+    console.log(currentValue);
+    
+  });
+  document.querySelector('#decrease-quantity').addEventListener('click', () => {
+    var currentValue = parseInt(document.querySelector('#quantity').value);
+    
+    document.querySelector('#quantity').value = currentValue - 1;
+    
+    if (currentValue - 1 < 1) {
+      document.querySelector('#quantity').value = 1;
+    }
+
+    console.log(currentValue);
+  });
+
 });
 
 
