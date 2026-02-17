@@ -198,72 +198,7 @@
     {% if block.settings.collection.products.size > 0 %}
       <div class="ai-featured-collection__grid-{{ ai_gen_id }}">
         {% for product in block.settings.collection.products limit: 8 %}
-          <div class="ai-featured-collection__product-card-{{ ai_gen_id }}">
-            <a href="{{ product.url }}" class="ai-featured-collection__image-wrapper-{{ ai_gen_id }}">
-              {% if product.featured_image %}
-                <img
-                  src="{{ product.featured_image | image_url: width: 600 }}"
-                  alt="{{ product.featured_image.alt | escape }}"
-                  class="ai-featured-collection__image-{{ ai_gen_id }}"
-                  loading="lazy"
-                  width="600"
-                  height="600"
-                >
-              {% else %}
-                <div class="ai-featured-collection__image-placeholder-{{ ai_gen_id }}">
-                  {{ 'product-1' | placeholder_svg_tag }}
-                </div>
-              {% endif %}
-            </a>
-
-            <div class="ai-featured-collection__product-info-{{ ai_gen_id }}">
-              {% if block.settings.show_vendor and product.vendor != blank %}
-                <div class="ai-featured-collection__product-vendor-{{ ai_gen_id }}">
-                  {{ product.vendor }}
-                </div>
-              {% endif %}
-
-              <a
-                href="{{ product.url }}"
-                class="ai-featured-collection__product-title-{{ ai_gen_id }}"
-              >
-                {{ product.title }}
-              </a>
-
-              {% if block.settings.show_price %}
-                <div class="ai-featured-collection__product-price-{{ ai_gen_id }}">
-                  {% if product.compare_at_price > product.price %}
-                    <span class="ai-featured-collection__price-sale-{{ ai_gen_id }}">
-                      {{ product.price | money }}
-                    </span>
-                    <span class="ai-featured-collection__price-compare-{{ ai_gen_id }}">
-                      {{ product.compare_at_price | money }}
-                    </span>
-                  {% else %}
-                    {{ product.price | money }}
-                  {% endif %}
-                </div>
-              {% endif %}
-
-              {% if block.settings.show_add_to_cart %}
-                {% form 'product', product %}
-                <button
-                  class="add-to-cart-button"
-                  data-product-id="{{ product.id }}"
-                  data-variant-id="{{ product.selected_or_first_available_variant.id }}"
-                  {% unless product.available %}disabled{% endunless %}
-                >
-                  {% if product.available %}
-                    {{ block.settings.add_to_cart_text }}
-                  {% else %}
-                    {{ block.settings.sold_out_text }}
-                  {% endif %}
-                </button>
-                {% endform %}
-              {% endif %}
-            
-            </div>
-          </div>
+          {%- render 'product-cart', product: product -%}
         {% endfor %}
       </div>
     {% else %}

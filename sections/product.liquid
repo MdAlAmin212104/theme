@@ -39,8 +39,8 @@
     <h1 class="product-title">{{ product.title }}</h1>
     
 <div class="product-prices">
-  <p class="product-compare-price">{{ product.selected_or_first_available_variant.compare_at_price }}</p>
-  <p class="product-price">{{ product.selected_or_first_available_variant.price }}</p>
+  <p class="product-compare-price">{{ product.selected_or_first_available_variant.compare_at_price | money }}</p>
+  <p class="product-price">{{ product.selected_or_first_available_variant.price | money }}</p>
 </div>
 
 

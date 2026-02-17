@@ -1,47 +1,190 @@
-{% comment %}
-  This section is used in the collection template to render collection page
-  listing all products within a collection.
+{{ 'collection.css' | asset_url | stylesheet_tag: preload: true }}
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
-{% endcomment %}
+<section class="col-hero">
+  <div class="col-hero__bg">
+    {% if collection.image %}
+      <img src="{{ collection.image | img_url: '1600x' }}" alt="{{ collection.title }}" class="col-hero__img" width="1600" height="auto" />
+    {% endif %}
+    <div class="col-hero__overlay"></div>
+  </div>
+  <div class="col-hero__content">
+    <p class="col-hero__eyebrow">Collection</p>
+    <h1 class="col-hero__title">{{ collection.title }}</h1>
+    {% if collection.description != blank %}
+      <p class="col-hero__desc">{{ collection.description }}</p>
+    {% endif %}
+    <p class="col-hero__count">{{ collection.products_count }} pieces</p>
+  </div>
+</section>
 
-<h1>{{ collection.title }}</h1>
-
-<div class="collection-products">
-  {% paginate collection.products by 20 %}
-    {% for product in collection.products %}
-      <div class="collection-product">
-        {% if product.featured_image %}
-          {% render 'image',
-            class: 'collection-product__image',
-            image: product.featured_image,
-            url: product.url,
-            width: 400,
-            height: 400,
-            crop: 'center'
-          %}
-        {% endif %}
-        <div class="collection-product__content">
-          <p>{{ product.title | escape | link_to: product.url }}</p>
-          <p>{{ product.price | money }}</p>
-        </div>
-      </div>
-    {% endfor %}
-
-    {{ paginate | default_pagination }}
-  {% endpaginate %}
+<!-- ╔══════════════════════════════════════════════╗ -->
+<!-- ║         FILTER + SORT TOOLBAR               ║ -->
+<!-- ╚══════════════════════════════════════════════╝ -->
+<div class="toolbar">
+  <div class="toolbar__inner">
+    <button class="toolbar__filter-toggle" id="filterToggle" aria-expanded="false" aria-controls="filterPanel">
+      <svg width="18" height="12" viewBox="0 0 18 12" fill="none"><path d="M0 1h18M3 6h12M6 11h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Filters
+    </button>
+    <div class="toolbar__sort">
+      <label for="sortBy" class="toolbar__sort-label">Sort by</label>
+      <select id="sortBy" class="toolbar__select" onchange="window.location = this.value">
+        <option value="?sort_by=manual" {% if collection.sort_by == 'manual' %}selected{% endif %}>Featured</option>
+        <option value="?sort_by=best-selling" {% if collection.sort_by == 'best-selling' %}selected{% endif %}>Best Selling</option>
+        <option value="?sort_by=price-ascending" {% if collection.sort_by == 'price-ascending' %}selected{% endif %}>Price: Low → High</option>
+        <option value="?sort_by=price-descending" {% if collection.sort_by == 'price-descending' %}selected{% endif %}>Price: High → Low</option>
+        <option value="?sort_by=created-descending" {% if collection.sort_by == 'created-descending' %}selected{% endif %}>Newest</option>
+        <option value="?sort_by=title-ascending" {% if collection.sort_by == 'title-ascending' %}selected{% endif %}>A – Z</option>
+      </select>
+    </div>
+  </div>
 </div>
 
-{% stylesheet %}
-  .collection-products {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
-  }
-{% endstylesheet %}
+<!-- ╔══════════════════════════════════════════════╗ -->
+<!-- ║       MAIN LAYOUT: SIDEBAR + GRID           ║ -->
+<!-- ╚══════════════════════════════════════════════╝ -->
+<div class="col-layout">
+
+  <!-- FILTER SIDEBAR -->
+  <aside class="filter-panel" id="filterPanel" aria-hidden="true">
+    <div class="filter-panel__inner">
+      <div class="filter-panel__head">
+        <h2 class="filter-panel__title">Filter</h2>
+        <button class="filter-panel__close" id="filterClose" aria-label="Close filters">✕</button>
+      </div>
+
+      <!-- Availability -->
+      <div class="filter-group">
+        <button class="filter-group__toggle" aria-expanded="true">
+          Availability
+          <svg class="chevron" width="12" height="7" viewBox="0 0 12 7"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+        </button>
+        <div class="filter-group__body">
+          <label class="filter-check">
+            <input type="checkbox" name="availability" value="in-stock" />
+            <span class="filter-check__box"></span>
+            <span>In Stock</span>
+          </label>
+          <label class="filter-check">
+            <input type="checkbox" name="availability" value="out-of-stock" />
+            <span class="filter-check__box"></span>
+            <span>Out of Stock</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Price Range -->
+      <div class="filter-group">
+        <button class="filter-group__toggle" aria-expanded="true">
+          Price Range
+          <svg class="chevron" width="12" height="7" viewBox="0 0 12 7"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+        </button>
+        <div class="filter-group__body">
+          <div class="price-range">
+            <div class="price-range__inputs">
+              <div class="price-range__field">
+                <span>$</span>
+                <input type="number" id="priceMin" placeholder="0" min="0" />
+              </div>
+              <span class="price-range__sep">—</span>
+              <div class="price-range__field">
+                <span>$</span>
+                <input type="number" id="priceMax" placeholder="9999" min="0" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Type -->
+      {% unless collection.all_types == blank %}
+      <div class="filter-group">
+        <button class="filter-group__toggle" aria-expanded="true">
+          Type
+          <svg class="chevron" width="12" height="7" viewBox="0 0 12 7"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+        </button>
+        <div class="filter-group__body">
+          {% for type in collection.all_types %}
+            <label class="filter-check">
+              <input type="checkbox" name="type" value="{{ type | handleize }}" />
+              <span class="filter-check__box"></span>
+              <span>{{ type }}</span>
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+      {% endunless %}
+
+      <!-- Tags / Colors -->
+      {% unless collection.all_tags == blank %}
+      <div class="filter-group">
+        <button class="filter-group__toggle" aria-expanded="true">
+          Tags
+          <svg class="chevron" width="12" height="7" viewBox="0 0 12 7"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+        </button>
+        <div class="filter-group__body filter-tags">
+          {% for tag in collection.all_tags %}
+            <a href="{{ collection.url }}/{{ tag | handleize }}"
+               class="filter-tag {% if current_tags contains tag %}filter-tag--active{% endif %}">
+              {{ tag }}
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endunless %}
+
+      <button class="btn-apply">Apply Filters</button>
+      <a href="{{ collection.url }}" class="btn-clear">Clear All</a>
+    </div>
+  </aside>
+
+  <!-- PRODUCT GRID -->
+  <main class="col-grid-wrap">
+    {% paginate collection.products by 12 %}
+
+      {% if collection.products.size == 0 %}
+        <div class="col-empty">
+          <p>No products found in this collection.</p>
+          <a href="{{ collection.url }}">Clear filters</a>
+        </div>
+      {% else %}
+        <div class="col-grid" id="productGrid">
+          {% for product in collection.products %}
+            {%- render 'product-cart', product: product -%}
+          {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        <div class="col-pagination">
+          {{ paginate | default_pagination }}
+        </div>
+      {% endif %}
+
+    {% endpaginate %}
+  </main>
+</div>
+
+<!-- Overlay -->
+<div class="filter-overlay" id="filterOverlay"></div>
+
+<script src="{{ 'collection.js' | asset_url }}" defer></script>
 
 {% schema %}
 {
   "name": "t:general.collection",
-  "settings": []
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filter",
+      "label": "Show filter panel",
+      "default": true
+    }
+  ]
 }
 {% endschema %}
