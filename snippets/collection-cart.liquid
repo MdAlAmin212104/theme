@@ -1,0 +1,47 @@
+{% assign collection = collection %}
+{{ 'collection-cart.css' | asset_url | stylesheet_tag }}
+<a class="collection-card" href="{{ collection.url }}">
+  <div class="collection-card__image-wrap">
+     {% if collection.featured_image %}
+        {% render 'image',
+          class: 'collection-card__image',
+          image: collection.featured_image,
+          width: 600,
+          height: 600,
+          crop: 'center'
+        %}
+      {% endif %}
+    {% comment %} <span class="collection-card__badge">New</span> {% endcomment %}
+    {% comment %} <span class="collection-card__arrow">
+      <svg
+        viewBox="0 0 16 16"
+        fill="none"
+        stroke="#111"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M3 8h10M9 4l4 4-4 4"/>
+      </svg>
+    </span> {% endcomment %}
+  </div>
+  <div class="collection-card__content">
+    <p class="collection-card__title">{{ collection.title | capitalize }}</p>
+    {% if collection.description %}
+    <p class="collection-card__desc">{{ collection.description | strip_html | truncatewords: 15 }}</p>
+    {% endif %}
+    {% comment %} <span class="collection-card__cta"
+      >Shop now
+      <svg
+        viewBox="0 0 16 16"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M3 8h10M9 4l4 4-4 4"/>
+      </svg>
+    </span> {% endcomment %}
+  </div>
+</a>
