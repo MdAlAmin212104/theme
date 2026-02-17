@@ -1,145 +1,81 @@
-{% comment %}
-  This section is used in the list-collections template to render a list of
-  collections.
-
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
-{% endcomment %}
-
-{% comment %} <h1>{{ 'collections.title' | t }}</h1>
-
-<div
-  class="collections {{ section.settings.grid_item_width }}"
-  style="--grid-gap: {{ section.settings.grid_gap }}px"
->
-  {% for collection in collections %}
-    <a class="collection-card" href="{{ collection.url }}">
-      {% if collection.featured_image %}
-        {% render 'image',
-          class: 'collection-card__image',
-          image: collection.featured_image,
-          width: 600,
-          height: 600,
-          crop: 'center'
-        %}
-      {% endif %}
-
-      <div class="collection-card__content">
-        <p>{{ collection.title }}</p>
-
-        {% if collection.description %}
-          <p>{{ collection.description | strip_html | truncatewords: 15 }}</p>
-        {% endif %}
-      </div>
-    </a>
-  {% endfor %}
-</div>
-
-{% stylesheet %}
+<style>
+  .page-header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+  .page-header h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: #111;
+  }
+  .page-header h1::after {
+    content: '';
+    display: block;
+    width: 48px;
+    height: 3px;
+    background: #b5a27f;
+    border-radius: 2px;
+    margin: 14px auto 0;
+  }
+  .page-header p {
+    margin-top: 14px;
+    color: #888;
+    font-size: 1.05rem;
+  }
+  .controls {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    max-width: 1280px;
+    margin: 0 auto 28px;
+  }
+  .controls label {
+    font-size: 0.82rem;
+    color: #888;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .controls button {
+    background: #fff;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    padding: 7px 14px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #555;
+    transition: all 0.18s;
+  }
+  .controls button.active,
+  .controls button:hover {
+    background: #1a1a1a;
+    color: #fff;
+    border-color: #1a1a1a;
+  }
   .collections {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(var(--collection-card-size), 100%), 1fr));
-    gap: var(--grid-gap);
+    gap: var(--grid-gap, 20px);
+    max-width: 1400px;
+    grid-template-columns: repeat(auto-fill, minmax(min(var(--collection-card-size, 280px), 100%), 1fr));
   }
-  .collections--compact {
-    --collection-card-size: 160px;
-  }
-  .collections--full {
-    --collection-card-size: 280px;
-  }
-  .collection-card {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
-
-
-
-
-
-{% endstylesheet %} {% endcomment %}
-
- <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    .page-header { text-align: center; margin-bottom: 56px; }
-    .page-header h1 {
-      font-size: clamp(2rem, 5vw, 3.2rem);
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      color: #111;
-    }
-    .page-header h1::after {
-      content: '';
-      display: block;
-      width: 48px;
-      height: 3px;
-      background: #b5a27f;
-      border-radius: 2px;
-      margin: 14px auto 0;
-    }
-    .page-header p { margin-top: 14px; color: #888; font-size: 1.05rem; }
-    .controls {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      gap: 10px;
-      max-width: 1280px;
-      margin: 0 auto 28px;
-    }
-    .controls label { font-size: 0.82rem; color: #888; letter-spacing: 0.06em; text-transform: uppercase; }
-    .controls button {
-      background: #fff;
-      border: 1.5px solid #ddd;
-      border-radius: 8px;
-      padding: 7px 14px;
-      cursor: pointer;
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: #555;
-      transition: all 0.18s;
-    }
-    .controls button.active, .controls button:hover { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
-    .collections {
-      display: grid;
-      gap: var(--grid-gap, 20px);
-      max-width: 1400px;
-      grid-template-columns: repeat(auto-fill, minmax(min(var(--collection-card-size, 280px), 100%), 1fr));
-    }
-    
-  </style>
-  <div class="page-header">
-    <h1>{{ 'collections.title' | t }}</h1>
-    <p>Discover curated pieces crafted with intention</p>
-  </div>
-  <div class="collections collections--full" id="grid" style="--grid-gap:20px">
-      {% for collection in collections %}
-        {%- render 'collection-cart', collection: collection -%}
-      {% endfor %}
-  </div>
+</style>
+<div class="page-header">
+  <h1>{{ 'collections.title' | t }}</h1>
+  <p>Discover curated pieces crafted with intention</p>
+</div>
+<div class="collections collections--full" id="grid" style="--grid-gap:20px">
+  {% for collection in collections %}
+    {%- render 'collection-cart', collection: collection -%}
+  {% endfor %}
+</div>
 
 {% schema %}
 {
   "name": "t:general.collections_grid",
   "settings": [
-    {
-      "type": "select",
-      "id": "grid_item_width",
-      "label": "t:labels.grid_item_width",
-      "options": [
-        { "value": "collections--compact", "label": "t:options.size.small" },
-        { "value": "collections--full", "label": "t:options.size.large" }
-      ],
-      "default": "collections--full"
-    },
-    {
-      "type": "range",
-      "id": "grid_gap",
-      "label": "t:labels.grid_gap",
-      "min": 0,
-      "max": 50,
-      "step": 5,
-      "unit": "px",
-      "default": 10
-    }
+    
   ],
   "presets": [{ "name": "t:general.collections_grid" }]
 }
