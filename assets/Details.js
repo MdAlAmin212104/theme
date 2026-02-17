@@ -163,7 +163,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
           const largeSrc = thumbImg.dataset.large;
 
-          if (largeSrc && largeSrc.includes(matchVariant.featured_image.src)) {
+          if (!largeSrc || !matchVariant?.featured_image?.src) return;
+
+          // Get only filename for safe comparison
+          const variantImg = matchVariant.featured_image.src.split('/').pop();
+          const thumbImgName = largeSrc.split('/').pop();
+
+          if (thumbImgName.includes(variantImg)) {
             // Remove selected from all
             document.querySelectorAll('.product-image-thumbnails li.selected')
               .forEach(el => el.classList.remove('selected'));
@@ -193,20 +199,20 @@ document.addEventListener('DOMContentLoaded', function () {
   // Update quantity input max
   document.querySelector('#increase-quantity').addEventListener('click', () => {
     var currentValue = parseInt(document.querySelector('#quantity').value);
-    
-    document.querySelector('#quantity').value = currentValue + 1; 
-    
+
+    document.querySelector('#quantity').value = currentValue + 1;
+
     if (currentValue + 1 > 99) {
       document.querySelector('#quantity').value = 99;
     }
     console.log(currentValue);
-    
+
   });
   document.querySelector('#decrease-quantity').addEventListener('click', () => {
     var currentValue = parseInt(document.querySelector('#quantity').value);
-    
+
     document.querySelector('#quantity').value = currentValue - 1;
-    
+
     if (currentValue - 1 < 1) {
       document.querySelector('#quantity').value = 1;
     }
