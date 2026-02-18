@@ -3,7 +3,7 @@
 <section class="col-hero">
   <div class="col-hero__bg">
     {% if collection.image %}
-      <img src="{{ collection.image | img_url: '1600x' }}" alt="{{ collection.title }}" class="col-hero__img" width="1600" height="auto" />
+      <img src="{{ collection.image | img_url }}" alt="{{ collection.title }}" class="col-hero__img" width="1600" height="auto" />
     {% endif %}
     <div class="col-hero__overlay"></div>
   </div>
@@ -16,6 +16,8 @@
     <p class="col-hero__count">{{ collection.products_count }} pieces</p>
   </div>
 </section>
+
+
 
 <!-- ╔══════════════════════════════════════════════╗ -->
 <!-- ║         FILTER + SORT TOOLBAR               ║ -->
@@ -39,6 +41,8 @@
     </div>
   </div>
 </div>
+
+
 
 <!-- ╔══════════════════════════════════════════════╗ -->
 <!-- ║       MAIN LAYOUT: SIDEBAR + GRID           ║ -->
