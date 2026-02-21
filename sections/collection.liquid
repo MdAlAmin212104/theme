@@ -34,7 +34,7 @@
         <option value="?sort_by=price-ascending" {% if collection.sort_by == 'price-ascending' %}selected{% endif %}>Price: Low → High</option>
         <option value="?sort_by=price-descending" {% if collection.sort_by == 'price-descending' %}selected{% endif %}>Price: High → Low</option>
         <option value="?sort_by=created-descending" {% if collection.sort_by == 'created-descending' %}selected{% endif %}>Newest</option>
-        <option value="?sort_by=title-ascending" {% if collection.sort_by == 'title-ascending' %}selected{% endif %}>A – Z</option>
+        <option value="?sort_by=title-ascending" {% if collection.sort_by == 'title-ascending' %}selected{% endif %}>A - Z</option>
       </select>
     </div>
   </div>
@@ -53,7 +53,66 @@
         <button class="filter-panel__close" id="filterClose" aria-label="Close filters">✕</button>
       </div>
 
-      <!-- Availability -->
+      <form>
+  {%- for filter in collection.filters -%}
+    {% comment %} <details>
+      <summary>
+        <div> 
+          <span>{{ filter.label }} </span>
+
+          {%- if filter.active_values.size > 0 -%}
+            <span>({{ filter.active_values.size }})</span>
+          {%- endif -%}
+        </div>
+      </summary>
+
+      <div>
+        <div>
+          <p>{{ filter.active_values.size }} selected</p>
+          {%- if filter.active_values.size > 0 -%}
+            <p><a href="{{ filter.url_to_remove }}">Reset</a></p>
+          {%- endif -%}
+        </div>
+
+        {%- case filter.type -%}
+          {%- when 'boolean' -%}
+            <ul>
+              <li>
+                <label for="Filter-{{ filter.param_name }}-{{ filter.true_value.value }}">
+                  <input
+                    type="checkbox"
+                    name="{{ filter.param_name }}"
+                    value="{{ filter.true_value.value }}"
+                    id="Filter-{{ filter.param_name }}"
+                    {% if filter.true_value.active %}checked{% endif %}
+                    {% if filter.true_value.count == 0 and filter.true_value.active == false %}disabled{% endif %}
+                  >
+                  {{ filter.true_value.label }}
+                </label>
+              </li>
+            </ul>
+
+        
+
+        {%- endcase -%}
+      </div>
+    </details> {% endcomment %}
+    <div class="collection-filter">
+      <div class="collection-filter-label">{{ filter.label }}</div>
+      <div class="collection-filter-options">
+        {% if filter.type == "list" or filter.type == "boolean" %}
+          {% for value in filter.values %}
+            {{value.param_name}}={{ value.label }}
+          {% endfor %}
+          {% else %}
+            {{ filter.values }}
+        {% endif %}
+      </div>
+    </div>
+  {%- endfor -%}
+</form>
+
+      {% comment %} <!-- Availability -->
       <div class="filter-group">
         <button class="filter-group__toggle" aria-expanded="true">
           Availability
@@ -131,12 +190,13 @@
           {% endfor %}
         </div>
       </div>
-      {% endunless %}
+      {% endunless %} {% endcomment %}
 
       <button class="btn-apply">Apply Filters</button>
       <a href="{{ collection.url }}" class="btn-clear">Clear All</a>
     </div>
-  </aside>
+  </aside> 
+
 
   <!-- PRODUCT GRID -->
   <main class="col-grid-wrap">
