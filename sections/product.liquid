@@ -68,27 +68,224 @@
           
         {%- when 'variant_picker' -%}
           {% if product.variants.size > 1 %}
-            <div class="product-options" style="margin-bottom: {{ block.settings.margin_bottom }}px;" {{ block.shopify_attributes }}>
+            <variant-selects class="variant-picker-options no-js-hidden" data-section="{{ section.id }}" data-url="{{ product.url }}" style="display:block; margin-bottom: {{ block.settings.margin_bottom }}px;" {{ block.shopify_attributes }}>
               {% for option in product.options_with_values %}
-                <fieldset>
-                  <legend>{{ option.name }}</legend>
-                  {% for value in option.values %}
-                    <div class="variant-value"> 
-                      <input
-                        {% if option.selected_value == value %}checked{% endif %}
-                        type="radio"
-                        name="{{ option.name }}"
-                        value="{{ value }}"
-                        id="{{ option.name | handleize  }}-{{ value | handleize  }}"
-                      />
-                      <label class="label-value" for="{{ option.name | handleize  }}-{{ value | handleize  }}">
-                        {{ value }}
-                      </label>  
+                {% assign is_color = false %}
+                {% assign option_name_down = option.name | downcase %}
+                {% if option_name_down contains 'color' or option_name_down contains 'colour' %}
+                  {% assign is_color = true %}
+                {% endif %}
+
+                <fieldset class="js product-form__input variant-fieldset">
+                  <legend class="form__label">
+                    {{ option.name }}
+                    {% if block.settings.show_labels %}
+                      <span class="selected-value" data-option-index="{{ forloop.index0 }}">{{ option.selected_value }}</span>
+                    {% endif %}
+                  </legend>
+
+                  {% if is_color and block.settings.enable_swatches %}
+                    <div class="swatch-container">
+                      {% for value in option.values %}
+                        {% assign position = 'option' | append: option.position %}
+                        {% assign swatch_variant = product.variants | where: position, value | first %}
+                        {% assign color_val = value | handleize %}
+                        {% assign bg_color = swatch_variant.metafields.custom.color | default: color_val %}
+                        {% assign bg_image = swatch_variant.featured_image %}
+                        
+                        <input type="radio" id="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}"
+                               name="{{ option.name }}" value="{{ value | escape }}"
+                               {% if option.selected_value == value %}checked{% endif %}>
+                        <label for="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}" 
+                               class="color-swatch shape-{{ block.settings.swatch_shape }}" 
+                               style="background-color: {{ bg_color }}; {% if bg_image %}background-image: url('{{ bg_image | image_url: width: 50, height: 50, crop: 'center' }}');{% endif %}"
+                               title="{{ value | escape }}">
+                          <span class="visually-hidden">{{ value | escape }}</span>
+                        </label>
+                      {% endfor %}
                     </div>
-                  {% endfor %}
+                  {% else %}
+                    {% if block.settings.picker_type == 'dropdown' %}
+                      <div class="select">
+                        <select id="Option-{{ section.id }}-{{ forloop.index0 }}"
+                                class="select__select" name="options[{{ option.name | escape }}]">
+                          {% for value in option.values %}
+                            <option value="{{ value | escape }}" {% if option.selected_value == value %}selected="selected"{% endif %}>
+                              {{ value }}
+                            </option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                    {% else %}
+                      <div class="variant-button-container">
+                      {% for value in option.values %}
+                        <div class="variant-value {% if block.settings.picker_type == 'pills' %}variant-pill{% endif %}">
+                          <input type="radio" id="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}"
+                                 name="{{ option.name }}" value="{{ value | escape }}"
+                                 {% if option.selected_value == value %}checked{% endif %}>
+                          <label for="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}">
+                            {{ value | escape }}
+                          </label>
+                        </div>
+                      {% endfor %}
+                      </div>
+                    {% endif %}
+                  {% endif %}
                 </fieldset>
               {% endfor %}
-            </div>
+
+              <script type="application/json">
+                {{ product.variants | json }}
+              </script>
+            </variant-selects>
+            
+            <style>
+              .variant-fieldset { border: none; padding: 0; margin: 0 0 15px 0; }
+              .form__label { font-weight: 600; margin-bottom: 8px; display: block; }
+              .selected-value { font-weight: 400; color: #555; margin-left: 8px; }
+              .color-swatch {
+                display: inline-block; width: 32px; height: 32px; margin-right: 8px;
+                cursor: pointer; border: 1px solid #e2e2e2; background-size: cover; background-position: center;
+                box-shadow: inset 0 0 0 2px #fff;
+              }
+              .color-swatch.shape-circle { border-radius: 50%; }
+              .color-swatch.shape-square { border-radius: 4px; }
+              input[type="radio"]:checked + .color-swatch { outline: 1px solid #000; border-color: #000; }
+              input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+              .variant-value { display: inline-block; margin-right: 8px; margin-bottom: 8px;}
+              .variant-value label { display: block; padding: 8px 16px; border: 1px solid #ccc; cursor: pointer; background: #fff; transition: all 0.2s;}
+              .variant-pill label { border-radius: 20px; }
+              input[type="radio"]:checked + label:not(.color-swatch) { background: #000; color: #fff; border-color: #000; }
+              .select__select { padding: 10px; border: 1px solid #ccc; width: 100%; border-radius: 4px; font-size: 16px; background: #fff;}
+              .swatch-container, .variant-button-container { display: flex; flex-wrap: wrap; margin-top: 5px; }
+              .variant-value input[type="radio"]:disabled + label { opacity: 0.5; text-decoration: line-through; cursor: not-allowed; }
+            </style>
+
+            <script>
+              if (!customElements.get('variant-selects')) {
+                class VariantSelects extends HTMLElement {
+                  constructor() {
+                    super();
+                    this.addEventListener('change', this.onVariantChange);
+                  }
+
+                  onVariantChange() {
+                    this.updateOptions();
+                    this.updateMasterId();
+                    this.toggleAddButton(true, '', false);
+                    this.updateURL();
+                    this.updateVariantInput();
+                    this.renderProductInfo();
+                  }
+
+                  updateOptions() {
+                    this.options = Array.from(this.querySelectorAll('select'), (select) => select.value);
+                    const fieldsets = Array.from(this.querySelectorAll('fieldset'));
+                    if (fieldsets.length > 0) {
+                      this.options = fieldsets.map((fieldset) => {
+                        const select = fieldset.querySelector('select');
+                        if (select) return select.value;
+                        return Array.from(fieldset.querySelectorAll('input')).find((radio) => radio.checked)?.value;
+                      });
+                    }
+                  }
+
+                  updateMasterId() {
+                    this.currentVariant = this.getVariantData().find((variant) => {
+                      return !variant.options.map((option, index) => {
+                        return this.options[index] === option;
+                      }).includes(false);
+                    });
+                  }
+
+                  getVariantData() {
+                    this.variantData = this.variantData || JSON.parse(this.querySelector('[type="application/json"]').textContent);
+                    return this.variantData;
+                  }
+
+                  updateVariantInput() {
+                    const productForms = document.querySelectorAll('#product-id, input[name="id"]');
+                    productForms.forEach((productForm) => {
+                      productForm.value = this.currentVariant ? this.currentVariant.id : '';
+                      productForm.dispatchEvent(new Event('change', { bubbles: true }));
+                    });
+                  }
+
+                  updateURL() {
+                    if (!this.currentVariant) return;
+                    window.history.replaceState({ }, '', `${this.dataset.url}?variant=${this.currentVariant.id}`);
+                  }
+
+                  renderProductInfo() {
+                    if (!this.currentVariant) {
+                      this.toggleAddButton(true, '', true);
+                      return;
+                    }
+                    // Update price
+                    const priceWrapper = document.querySelector('.product-prices');
+                    if (priceWrapper && typeof window.Shopify !== 'undefined' && Shopify.formatMoney) {
+                      const comparePrice = priceWrapper.querySelector('.product-compare-price');
+                      const price = priceWrapper.querySelector('.product-price');
+                      if (price) price.textContent = Shopify.formatMoney(this.currentVariant.price);
+                      if (comparePrice) {
+                        if (this.currentVariant.compare_at_price > this.currentVariant.price) {
+                          comparePrice.textContent = Shopify.formatMoney(this.currentVariant.compare_at_price);
+                          comparePrice.style.display = 'block';
+                        } else {
+                          comparePrice.style.display = 'none';
+                        }
+                      }
+                    }
+                    // Update Add to Cart
+                    this.toggleAddButton(!this.currentVariant.available, 'Sold Out');
+
+                    // Update image
+                    if (this.currentVariant.featured_image) {
+                      const mainImg = document.querySelector('.product-main-image');
+                      if (mainImg) {
+                        const newSrc = this.currentVariant.featured_image.src.replace(/\.\w+$/, '_800x800$&');
+                        mainImg.src = newSrc;
+                        // update selected thumbnail
+                        document.querySelectorAll('.product-image-thumbnails li').forEach(li => {
+                          const thumbImg = li.querySelector('img');
+                          if (thumbImg) {
+                            const variantImgName = this.currentVariant.featured_image.src.split('/').pop().split('?')[0];
+                            const thumbImgName = thumbImg.dataset.large.split('/').pop().split('?')[0];
+                            if (thumbImgName.includes(variantImgName) || variantImgName.includes(thumbImgName)) {
+                              document.querySelectorAll('.product-image-thumbnails li.selected').forEach(el => el.classList.remove('selected'));
+                              li.classList.add('selected');
+                            }
+                          }
+                        });
+                      }
+                    }
+                    
+                    // Update selected labels
+                    const labels = this.querySelectorAll('.selected-value');
+                    labels.forEach(label => {
+                       const idx = label.dataset.optionIndex;
+                       if(this.options[idx]) label.textContent = this.options[idx];
+                    });
+                  }
+
+                  toggleAddButton(disable = true, text = 'Sold Out', modifyClass = true) {
+                    const productForm = document.querySelector('.product-form');
+                    if (!productForm) return;
+                    const addButton = productForm.querySelector('[name="add"], #add-to-cart, button[type="submit"]');
+                    if (!addButton) return;
+
+                    if (disable) {
+                      addButton.setAttribute('disabled', 'disabled');
+                      if (text) addButton.textContent = text;
+                    } else {
+                      addButton.removeAttribute('disabled');
+                      addButton.textContent = 'Add to Cart';
+                    }
+                  }
+                }
+                customElements.define('variant-selects', VariantSelects);
+              }
+            </script>
           {% endif %}
           
         {%- when 'buy_buttons' -%}
@@ -126,11 +323,15 @@
           <div class="custom-code" style="margin-bottom: {{ block.settings.margin_bottom }}px;" {{ block.shopify_attributes }}>
             {{ block.settings.custom_code }}
           </div>
+        {%- when 'product-slider' -%}
+          {% render 'add_on', section: section blocks: block%}
           
       {%- endcase -%}
     {%- endfor -%}
   </div>
 </div>
+
+
 
 <script>
   const product = {{ product | json }};
@@ -232,6 +433,39 @@
       "limit": 1,
       "settings": [
         {
+          "type": "select",
+          "id": "picker_type",
+          "label": "Style (for non-color options)",
+          "options": [
+            { "value": "button", "label": "Buttons" },
+            { "value": "pills", "label": "Pills" },
+            { "value": "dropdown", "label": "Dropdown" }
+          ],
+          "default": "button"
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_swatches",
+          "label": "Enable color swatches",
+          "default": true
+        },
+        {
+          "type": "select",
+          "id": "swatch_shape",
+          "label": "Swatch shape",
+          "options": [
+            { "value": "circle", "label": "Circle" },
+            { "value": "square", "label": "Square" }
+          ],
+          "default": "circle"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_labels",
+          "label": "Show variant labels",
+          "default": true
+        },
+        {
           "type": "range",
           "id": "margin_bottom",
           "min": 0,
@@ -296,6 +530,52 @@
           "unit": "px",
           "label": "Margin Bottom",
           "default": 16
+        }
+      ]
+    },
+    {
+      "type": "product-slider",
+      "name": "Product Slider",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Related Products"
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "select",
+          "id": "items_per_row",
+          "label": "Items per row on Desktop",
+          "options": [
+            { "value": "3", "label": "3" },
+            { "value": "4", "label": "4" },
+            { "value": "5", "label": "5" }
+          ],
+          "default": "4"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_title",
+          "label": "Show Title",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_price",
+          "label": "Show Price",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_button",
+          "label": "Show Add to Cart button",
+          "default": true
         }
       ]
     }

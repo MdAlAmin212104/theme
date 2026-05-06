@@ -1,0 +1,208 @@
+{%- for block in section.blocks -%}
+  {%- case block.type -%}
+    {%- when 'product-slider' -%}
+      {% assign collection = collections[block.settings.collection] %}
+      <div class="product-slider-block" {{ block.shopify_attributes }}>
+        {% if block.settings.heading != blank %}
+          <h2 class="slider-heading">{{ block.settings.heading }}</h2>
+        {% endif %}
+        
+        <div class="slider-container" style="--items-desktop: {{ block.settings.items_per_row }};">
+          <div class="slider-track">
+            {% for prod in collection.products limit: 12 %}
+              <div class="slider-slide">
+                <a href="{{ prod.url }}" class="slide-image-link">
+                  <img src="{{ prod.featured_image | image_url: width: 400 }}" alt="{{ prod.title | escape }}" loading="lazy" class="slide-image">
+                </a>
+                <div class="slide-info">
+                  {% if block.settings.show_title %}
+                    <a href="{{ prod.url }}" class="slide-title">{{ prod.title }}</a>
+                  {% endif %}
+                  
+                  {% if block.settings.show_price %}
+                    <div class="slide-price">{{ prod.price | money }}</div>
+                  {% endif %}
+                  
+                  {% if block.settings.show_button %}
+                    <button type="button" class="slide-add-to-cart" data-variant-id="{{ prod.selected_or_first_available_variant.id }}">
+                      Add to cart
+                    </button>
+                  {% endif %}
+                </div>
+              </div>
+            {% else %}
+              <div style="padding: 40px; text-align: center; width: 100%;">Select a collection to display products.</div>
+            {% endfor %}
+          </div>
+          <button class="slider-prev">&lsaquo;</button>
+          <button class="slider-next">&rsaquo;</button>
+        </div>
+      </div>
+  {%- endcase -%}
+{%- endfor -%}
+
+<style>
+.product-slider-block {
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 40px auto;
+}
+.slider-heading {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.slider-container {
+  position: relative;
+  overflow: hidden;
+}
+.slider-track {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+  padding-bottom: 10px;
+}
+.slider-track::-webkit-scrollbar {
+  display: none;
+}
+.slider-slide {
+  flex: 0 0 calc( (100% - (var(--items-desktop) - 1) * 20px) / var(--items-desktop) );
+  scroll-snap-align: start;
+  box-sizing: border-box;
+  text-align: center;
+}
+@media (max-width: 768px) {
+  .slider-slide {
+    flex: 0 0 calc( (100% - 20px) / 2 ); /* 2 items on mobile */
+  }
+}
+.slide-image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.slide-info {
+  padding: 15px 0;
+}
+.slide-title {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  text-decoration: none;
+  color: #333;
+}
+.slide-price {
+  color: #666;
+  margin-bottom: 12px;
+}
+.slide-add-to-cart {
+  background: #000;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 4px;
+  width: 100%;
+  transition: background 0.3s;
+}
+.slide-add-to-cart:hover {
+  background: #333;
+}
+.slider-prev, .slider-next {
+  position: absolute;
+  top: 40%;
+  transform: translateY(-50%);
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.slider-prev { left: 10px; }
+.slider-next { right: 10px; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const tracks = document.querySelectorAll('.slider-track');
+  tracks.forEach(track => {
+    const container = track.closest('.slider-container');
+    const prevBtn = container.querySelector('.slider-prev');
+    const nextBtn = container.querySelector('.slider-next');
+    
+    if(prevBtn && nextBtn) {
+      prevBtn.addEventListener('click', () => {
+        const slideWidth = track.querySelector('.slider-slide')?.offsetWidth + 20 || 300;
+        track.scrollBy({ left: -slideWidth, behavior: 'smooth' });
+      });
+      nextBtn.addEventListener('click', () => {
+        const slideWidth = track.querySelector('.slider-slide')?.offsetWidth + 20 || 300;
+        track.scrollBy({ left: slideWidth, behavior: 'smooth' });
+      });
+    }
+  });
+
+  const addButtons = document.querySelectorAll('.slide-add-to-cart');
+  addButtons.forEach(btn => {
+    btn.addEventListener('click', function() {
+      const variantId = this.getAttribute('data-variant-id');
+      if (!variantId) return;
+      const originalText = this.textContent;
+      this.textContent = 'Adding...';
+      this.disabled = true;
+
+      let formData = {
+        'items': [{
+          'id': variantId,
+          'quantity': 1
+        }]
+      };
+
+      fetch(window.Shopify?.routes?.root ? window.Shopify.routes.root + 'cart/add.js' : '/cart/add.js', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+      .then(response => {
+        if (!response.ok) throw new Error('Network response was not ok');
+        return response.json();
+      })
+      .then(data => {
+        this.textContent = 'Added!';
+        window.dispatchEvent(new Event('cart:updated'));
+        
+        fetch('/cart.js')
+          .then(res => res.json())
+          .then(cart => {
+            document.querySelectorAll('.cart-count-bubble').forEach(el => {
+              el.innerHTML = `<span>${cart.item_count}</span>`;
+            });
+          });
+
+        setTimeout(() => {
+          this.textContent = originalText;
+          this.disabled = false;
+        }, 2000);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        this.textContent = 'Error';
+        this.disabled = false;
+      });
+    });
+  });
+});
+</script>
