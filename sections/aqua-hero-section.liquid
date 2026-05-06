@@ -1,0 +1,271 @@
+<div class="nv3-hero">
+  <div class="nv3-hero__content">
+    <div class="nv3-hero__stars">
+      <span class="nv3-stars">{{ section.settings.stars_icon }}</span>
+      <span class="nv3-stars-text">{{ section.settings.stars_text }}</span>
+    </div>
+    <h1 class="nv3-hero__title">{{ section.settings.title }}</h1>
+    <p class="nv3-hero__subtitle">{{ section.settings.subtitle }}</p>
+    {% if section.settings.button_text != blank %}
+      <a href="{{ section.settings.button_link | default: '#' }}" class="nv3-hero__btn">{{ section.settings.button_text }}</a>
+    {% endif %}
+    
+    {% if section.blocks.size > 0 %}
+      <ul class="nv3-hero__checks">
+        {% for block in section.blocks %}
+          <li {{ block.shopify_attributes }}><span class="nv3-check">✓</span> {{ block.settings.text }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+  <div class="nv3-hero__image">
+    {% if section.settings.image %}
+      {{ section.settings.image | image_url: width: 1200 | image_tag: alt: section.settings.image.alt }}
+    {% else %}
+      <img src="https://cdn.shopify.com/s/files/1/1043/8964/0533/files/pot_nelvona_impermeablilise.png?v=1776937140" alt="AquaShield™">
+    {% endif %}
+  </div>
+</div>
+
+<style>
+.nv3-hero {
+  display: flex;
+  align-items: center;
+  border-radius: 16px;
+  overflow: hidden;
+  min-height: 420px;
+  background: #ffffff;
+  border: 1px solid #eee;
+  position: relative;
+  margin: 20px auto;
+  max-width: 1200px;
+}
+
+.nv3-hero__content {
+  flex: 0 0 52%;
+  padding: 48px 40px;
+  position: relative;
+  z-index: 2;
+  background: linear-gradient(90deg, #ffffff 0%, #ffffff 80%, rgba(255,255,255,0) 100%);
+}
+
+.nv3-hero__image {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 55%;
+  overflow: hidden;
+}
+
+.nv3-hero__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center left;
+}
+
+.nv3-hero__image::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #ffffff 0%, rgba(255,255,255,0.6) 40%, rgba(255,255,255,0) 100%);
+  z-index: 1;
+}
+
+.nv3-hero__stars {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.nv3-stars {
+  color: #F5A623;
+  font-size: 18px;
+  letter-spacing: 2px;
+}
+
+.nv3-stars-text {
+  color: #555;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.nv3-hero__title {
+  font-size: clamp(22px, 3vw, 36px);
+  font-weight: 800;
+  color: #1B3A6B;
+  line-height: 1.2;
+  margin: 0 0 16px;
+  letter-spacing: -0.5px;
+}
+
+.nv3-hero__subtitle {
+  font-size: clamp(13px, 1.4vw, 15px);
+  color: #444;
+  line-height: 1.6;
+  margin: 0 0 28px;
+}
+
+.nv3-hero__btn {
+  display: inline-block;
+  background: #1B3A6B;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 14px 28px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 16px rgba(27,58,107,0.3);
+}
+
+.nv3-hero__btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(27,58,107,0.4);
+}
+
+.nv3-hero__checks {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nv3-hero__checks li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.nv3-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: #22c55e;
+  color: white;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .nv3-hero {
+    flex-direction: column;
+    min-height: auto;
+  }
+  .nv3-hero__content {
+    flex: none;
+    width: 100%;
+    padding: 32px 24px 24px;
+    background: #ffffff;
+  }
+  .nv3-hero__image {
+    position: relative;
+    width: 100%;
+    height: 280px;
+  }
+  .nv3-hero__image img {
+    object-position: center top;
+  }
+  .nv3-hero__image::before {
+    background: linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,0) 30%);
+  }
+}
+</style>
+
+{% schema %}
+{
+  "name": "Aqua Hero Section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "stars_icon",
+      "label": "Stars Icon",
+      "default": "★★★★☆"
+    },
+    {
+      "type": "text",
+      "id": "stars_text",
+      "label": "Stars Text",
+      "default": "4,6/5 sur 583 avis vérifiés"
+    },
+    {
+      "type": "textarea",
+      "id": "title",
+      "label": "Title",
+      "default": "Stop aux infiltrations d'eau<br>sans travaux lourds."
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "AquaShield™ forme un film invisible ultra-résistant qui protège efficacement vos surfaces contre l'eau, l'humidité et les fuites."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Découvrir AquaShield™ →"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Hero Image"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "check_item",
+      "name": "Check Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Item text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Aqua Hero Section",
+      "blocks": [
+        {
+          "type": "check_item",
+          "settings": {
+            "text": "Livraison offerte en France"
+          }
+        },
+        {
+          "type": "check_item",
+          "settings": {
+            "text": "Satisfait ou remboursé 90 jours"
+          }
+        },
+        {
+          "type": "check_item",
+          "settings": {
+            "text": "Paiement 100% sécurisé"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

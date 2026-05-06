@@ -1,0 +1,245 @@
+<div class="page-width">
+<div class="nv-how">
+  <h2 class="nv-how__title">{{ section.settings.title }}</h2>
+  <div class="nv-how__steps">
+
+    {% for block in section.blocks %}
+      <div class="nv-how__step" {{ block.shopify_attributes }}>
+        <div class="nv-how__img-wrap">
+          <span class="nv-how__num">{{ block.settings.number }}</span>
+          {% if block.settings.image != blank %}
+            {{ block.settings.image | image_url: width: 400 | image_tag: alt: block.settings.title }}
+          {% elsif block.settings.fallback_image_url != blank %}
+            <img src="{{ block.settings.fallback_image_url }}" alt="{{ block.settings.title | escape }}">
+          {% else %}
+            {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+          {% endif %}
+        </div>
+        <h3 class="nv-how__step-title">{{ block.settings.title }}</h3>
+        <p class="nv-how__step-text">{{ block.settings.text | newline_to_br }}</p>
+      </div>
+
+      {% unless forloop.last %}
+        <div class="nv-how__arrow">→</div>
+      {% endunless %}
+    {% endfor %}
+
+  </div>
+</div>
+</div>
+
+<style>
+.nv-how {
+  padding: 48px 24px;
+  background: {{ section.settings.bg_color | default: '#ffffff' }};
+  text-align: center;
+  margin: 0 auto;
+}
+
+.nv-how__title {
+  font-size: clamp(22px, 3vw, 32px);
+  font-weight: 800;
+  color: #1B3A6B;
+  margin: 0 0 40px;
+}
+
+.nv-how__steps {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 16px;
+}
+
+.nv-how__step {
+  flex: 1;
+  max-width: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.nv-how__img-wrap {
+  position: relative;
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.nv-how__img-wrap img, .nv-how__img-wrap svg {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.nv-how__img-wrap svg.placeholder-svg {
+  background: #f3f3f3;
+  fill: #ccc;
+}
+
+.nv-how__num {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 32px;
+  height: 32px;
+  background: #1B3A6B;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 800;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.nv-how__step-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1B3A6B;
+  margin: 0;
+}
+
+.nv-how__step-text {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.nv-how__arrow {
+  font-size: 28px;
+  color: #1B3A6B;
+  margin-top: 80px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 700px) {
+  .nv-how {
+    padding: 32px 8px;
+  }
+  .nv-how__steps {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .nv-how__step {
+    max-width: none;
+    gap: 8px;
+  }
+  .nv-how__img-wrap img, .nv-how__img-wrap svg {
+    height: 90px;
+  }
+  .nv-how__num {
+    width: 22px;
+    height: 22px;
+    font-size: 11px;
+    top: 6px;
+    left: 6px;
+  }
+  .nv-how__step-title {
+    font-size: 11px;
+  }
+  .nv-how__step-text {
+    font-size: 10px;
+    line-height: 1.4;
+  }
+  .nv-how__arrow {
+    margin-top: 45px;
+    font-size: 16px;
+  }
+}
+</style>
+
+{% schema %}
+{
+  "name": "Aqua How It Works",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Comment ça marche ?"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Step",
+      "settings": [
+        {
+          "type": "text",
+          "id": "number",
+          "label": "Step Number",
+          "default": "1"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "url",
+          "id": "fallback_image_url",
+          "label": "Fallback Image URL",
+          "info": "Used for the default preset images"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Step Title",
+          "default": "Step Title"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Step Text",
+          "default": "Description of the step."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Aqua How It Works",
+      "blocks": [
+        {
+          "type": "step",
+          "settings": {
+            "number": "1",
+            "fallback_image_url": "https://cdn.shopify.com/s/files/1/1043/8964/0533/files/Image_1.png?v=1777018835",
+            "title": "Nettoyez la surface",
+            "text": "Assurez-vous que la surface soit propre et sèche."
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "number": "2",
+            "fallback_image_url": "https://cdn.shopify.com/s/files/1/1043/8964/0533/files/Image_2.png?v=1777018838",
+            "title": "Appliquez AquaShield™",
+            "text": "Étalez le produit uniformément au pinceau."
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "number": "3",
+            "fallback_image_url": "https://cdn.shopify.com/s/files/1/1043/8964/0533/files/image_3.png?v=1777018836",
+            "title": "Laissez agir",
+            "text": "Le film invisible se forme et protège efficacement votre surface."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

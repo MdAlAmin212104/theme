@@ -1,0 +1,190 @@
+<div class="page-width">
+  <div class="nv-surfaces">
+    <h2 class="nv-surfaces__title">{{ section.settings.title }}</h2>
+    <div class="nv-surfaces__grid">
+      {% for block in section.blocks %}
+        <div class="nv-surfaces__item" {{ block.shopify_attributes }}>
+          <div class="nv-surfaces__img-wrap">
+            {% if block.settings.image != blank %}
+              {{ block.settings.image | image_url: width: 300 | image_tag: alt: block.settings.label }}
+            {% elsif block.settings.fallback_image_url != blank %}
+              <img src="{{ block.settings.fallback_image_url }}" alt="{{ block.settings.label | escape }}">
+            {% else %}
+              {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+            {% endif %}
+          </div>
+          <p class="nv-surfaces__label">{{ block.settings.label }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<style>
+.nv-surfaces {
+  padding: 48px 24px;
+  background: {{ section.settings.bg_color | default: '#ffffff' }};
+  text-align: center;
+  margin: 0 auto;
+}
+
+.nv-surfaces__title {
+  font-size: clamp(20px, 3vw, 30px);
+  font-weight: 800;
+  color: #1B3A6B;
+  margin: 0 0 36px;
+}
+
+.nv-surfaces__grid {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: nowrap;
+}
+
+.nv-surfaces__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.nv-surfaces__img-wrap {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.nv-surfaces__img-wrap img, .nv-surfaces__img-wrap svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s;
+}
+
+.nv-surfaces__img-wrap svg.placeholder-svg {
+  background: #f3f3f3;
+  fill: #ccc;
+}
+
+.nv-surfaces__img-wrap img:hover {
+  transform: scale(1.05);
+}
+
+.nv-surfaces__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1B3A6B;
+  margin: 0;
+}
+
+@media (max-width: 700px) {
+  .nv-surfaces {
+    padding: 32px 8px;
+  }
+  .nv-surfaces__grid {
+    gap: 6px;
+  }
+  .nv-surfaces__label {
+    font-size: 9px;
+  }
+}
+</style>
+
+{% schema %}
+{
+  "name": "Aqua Surfaces Section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Parfait pour toutes vos surfaces"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "surface",
+      "name": "Surface",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "url",
+          "id": "fallback_image_url",
+          "label": "Fallback Image URL",
+          "info": "Used for the default preset images"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Surface Name"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Aqua Surfaces Section",
+      "blocks": [
+        {
+          "type": "surface",
+          "settings": {
+            "fallback_image_url": "https://cdn.shopify.com/s/files/1/1043/8964/0533/files/1.png?v=1777020837",
+            "label": "Béton"
+          }
+        },
+        {
+          "type": "surface",
+          "settings": {
+            "fallback_image_url": "https://cdn.shopify.com/s/files/1/1043/8964/0533/files/2.png?v=1777020837",
+            "label": "Toiture"
+          }
+        },
+        {
+          "type": "surface",
+          "settings": {
+            "fallback_image_url": "https://cdn.shopify.com/s/files/1/1043/8964/0533/files/4.png?v=1777020837",
+            "label": "Brique"
+          }
+        },
+        {
+          "type": "surface",
+          "settings": {
+            "fallback_image_url": "https://cdn.shopify.com/s/files/1/1043/8964/0533/files/3.png?v=1777020837",
+            "label": "Pierre naturelle"
+          }
+        },
+        {
+          "type": "surface",
+          "settings": {
+            "fallback_image_url": "https://cdn.shopify.com/s/files/1/1043/8964/0533/files/5.png?v=1777020837",
+            "label": "Carrelage"
+          }
+        },
+        {
+          "type": "surface",
+          "settings": {
+            "fallback_image_url": "https://cdn.shopify.com/s/files/1/1043/8964/0533/files/6.png?v=1777020837",
+            "label": "Bois"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
