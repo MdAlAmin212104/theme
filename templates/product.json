@@ -1,28 +1,71 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "main": {
       "type": "product",
       "blocks": {
         "image_gallery": {
-          "type": "image_gallery"
+          "type": "image_gallery",
+          "settings": {}
         },
         "vendor": {
-          "type": "vendor"
+          "type": "vendor",
+          "settings": {
+            "margin_bottom": 16
+          }
         },
         "title": {
-          "type": "title"
+          "type": "title",
+          "settings": {
+            "margin_bottom": 16
+          }
         },
         "price": {
-          "type": "price"
+          "type": "price",
+          "settings": {
+            "margin_bottom": 16
+          }
         },
         "variant_picker": {
-          "type": "variant_picker"
+          "type": "variant_picker",
+          "settings": {
+            "picker_type": "button",
+            "enable_swatches": true,
+            "swatch_shape": "circle",
+            "show_labels": true,
+            "margin_bottom": 16
+          }
         },
         "buy_buttons": {
-          "type": "buy_buttons"
+          "type": "buy_buttons",
+          "settings": {
+            "margin_bottom": 16
+          }
         },
         "description": {
-          "type": "description"
+          "type": "description",
+          "settings": {
+            "margin_bottom": 16
+          }
+        },
+        "product_slider_BGQJ4z": {
+          "type": "product-slider",
+          "settings": {
+            "heading": "Related Products",
+            "collection": "best-selling",
+            "items_per_row": "4",
+            "show_title": true,
+            "show_price": true,
+            "show_button": true
+          }
         }
       },
       "block_order": [
@@ -32,9 +75,13 @@
         "price",
         "variant_picker",
         "buy_buttons",
-        "description"
+        "description",
+        "product_slider_BGQJ4z"
       ],
-      "settings": {}
+      "settings": {
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
     }
   },
   "order": [
