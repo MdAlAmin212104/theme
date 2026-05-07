@@ -16,10 +16,7 @@
     "collections_NKmWxW": {
       "type": "collections",
       "name": "t:general.collections_grid",
-      "settings": {
-        "grid_item_width": "collections--full",
-        "grid_gap": 10
-      }
+      "settings": {}
     },
     "1770306750057dd872": {
       "type": "_blocks",
@@ -66,9 +63,47 @@
         "ai_gen_block_33c3397_9yeXLn"
       ],
       "settings": {}
+    },
+    "aqua_hero_section_nebpNh": {
+      "type": "aqua-hero-section",
+      "blocks": {
+        "check_item_wWJPkh": {
+          "type": "check_item",
+          "settings": {
+            "text": "Livraison offerte en France"
+          }
+        },
+        "check_item_chiHFV": {
+          "type": "check_item",
+          "settings": {
+            "text": "Satisfait ou remboursé 90 jours"
+          }
+        },
+        "check_item_ry8UrH": {
+          "type": "check_item",
+          "settings": {
+            "text": "Paiement 100% sécurisé"
+          }
+        }
+      },
+      "block_order": [
+        "check_item_wWJPkh",
+        "check_item_chiHFV",
+        "check_item_ry8UrH"
+      ],
+      "name": "Aqua Hero Section",
+      "settings": {
+        "stars_icon": "★★★★☆",
+        "stars_text": "4,6/5 sur 583 avis vérifiés",
+        "title": "Stop aux infiltrations d'eau<br>sans travaux lourds.",
+        "subtitle": "AquaShield™ forme un film invisible ultra-résistant qui protège efficacement vos surfaces contre l'eau, l'humidité et les fuites.",
+        "button_text": "Découvrir AquaShield™ →",
+        "button_link": ""
+      }
     }
   },
   "order": [
+    "aqua_hero_section_nebpNh",
     "main",
     "collections_NKmWxW",
     "1770306750057dd872"
