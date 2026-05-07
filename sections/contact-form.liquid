@@ -1,0 +1,227 @@
+{%- style -%}
+  .contact-section-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    background-color: {{ section.settings.bg_color }};
+  }
+
+  .contact-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2.5rem;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  }
+
+  .contact-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .contact-header h2 {
+    font-size: 2.5rem;
+    color: #111827;
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+    font-family: inherit;
+  }
+
+  .contact-header p {
+    color: #4b5563;
+    font-size: 1.125rem;
+    margin-top: 0;
+  }
+
+  .contact-form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .contact-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .contact-form-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .contact-input,
+  .contact-textarea {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.2s ease-in-out;
+    background-color: #f9fafb;
+    box-sizing: border-box;
+    font-family: inherit;
+    color: #111827;
+  }
+
+  .contact-input:focus,
+  .contact-textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+  }
+
+  .contact-textarea {
+    min-height: 160px;
+    resize: vertical;
+  }
+
+  .contact-submit {
+    background-color: #2563eb;
+    color: #ffffff;
+    border: none;
+    padding: 1rem 2.5rem;
+    font-size: 1.125rem;
+    border-radius: 12px;
+    cursor: pointer;
+    width: 100%;
+    font-weight: 600;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+  }
+
+  .contact-submit:hover {
+    background-color: #1d4ed8;
+  }
+
+  .contact-submit:active {
+    transform: scale(0.98);
+  }
+
+  .form-message {
+    padding: 1.25rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-weight: 500;
+  }
+  
+  .form-message--success {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+  }
+
+  .form-message--error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+  
+  .form-errors {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0;
+    font-weight: 400;
+  }
+{%- endstyle -%}
+
+<div class="contact-section-{{ section.id }}">
+  <div class="contact-wrapper">
+    <div class="contact-header">
+      <h2>{{ section.settings.title }}</h2>
+      {%- if section.settings.subtitle != blank -%}
+        <p>{{ section.settings.subtitle }}</p>
+      {%- endif -%}
+    </div>
+
+    {%- form 'contact', id: 'ContactForm' -%}
+      {%- if form.posted_successfully? -%}
+        <div class="form-message form-message--success" tabindex="-1" autofocus>
+          Thanks for contacting us. We'll get back to you as soon as possible.
+        </div>
+      {%- elsif form.errors -%}
+        <div class="form-message form-message--error" tabindex="-1" autofocus>
+          Please adjust the following:
+          <ul class="form-errors">
+            {%- for error in form.errors -%}
+              <li>{{ error | capitalize }} {{ form.errors.messages[error] }}</li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+
+      <div class="contact-form-grid">
+        <div class="contact-form-group">
+          <input class="contact-input" autocomplete="name" type="text" id="ContactForm-name" name="contact[name]" value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}" placeholder="Name" required>
+        </div>
+        <div class="contact-form-group">
+          <input class="contact-input" autocomplete="email" type="email" id="ContactForm-email" name="contact[email]" spellcheck="false" autocapitalize="off" value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}" placeholder="Email" required>
+        </div>
+      </div>
+
+      <div class="contact-form-group">
+        <input class="contact-input" type="tel" id="ContactForm-phone" autocomplete="tel" name="contact[phone]" pattern="[0-9\-]*" value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}" placeholder="Phone Number">
+      </div>
+
+      <div class="contact-form-group">
+        <textarea class="contact-textarea" id="ContactForm-body" name="contact[body]" placeholder="Message" required>{%- if form.body -%}{{ form.body }}{%- endif -%}</textarea>
+      </div>
+
+      <button type="submit" class="contact-submit">
+        Send Message
+      </button>
+    {%- endform -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Contact Form",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Get in Touch"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "We'd love to hear from you. Please fill out the form below."
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#f3f4f6"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 64
+    }
+  ],
+  "presets": [
+    {
+      "name": "Contact Form"
+    }
+  ]
+}
+{% endschema %}
