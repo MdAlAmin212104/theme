@@ -58,7 +58,22 @@
           {% endif %}
           
         {%- when 'title' -%}
-          <h1 class="product-title" style="margin-bottom: {{ block.settings.margin_bottom }}px;" {{ block.shopify_attributes }}>{{ product.title }}</h1>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: {{ block.settings.margin_bottom }}px;" {{ block.shopify_attributes }}>
+            <h1 class="product-title" style="margin: 0;">{{ product.title }}</h1>
+            <button class="wishlist-btn" 
+                    data-product-handle="{{ product.handle }}"
+                    data-product-title="{{ product.title | escape }}"
+                    data-product-price="{{ product.selected_or_first_available_variant.price | money }}"
+                    data-product-url="{{ product.url }}"
+                    data-product-image="{{ product.featured_image | image_url: width: 400 }}"
+                    aria-label="Add to wishlist" 
+                    onclick="event.preventDefault(); window.toggleWishlist(this)"
+                    style="border: 1px solid #e0e0e0; border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: #fff; flex-shrink: 0; margin-left: 16px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="wishlist-icon">
+                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
           
         {%- when 'price' -%}
           <div class="product-prices" style="margin-bottom: {{ block.settings.margin_bottom }}px;" {{ block.shopify_attributes }}>

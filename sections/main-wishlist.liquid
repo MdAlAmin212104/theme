@@ -1,0 +1,26 @@
+{{ 'wishlist.css' | asset_url | stylesheet_tag }}
+
+<div class="wishlist-page">
+  <h1 class="wishlist-page__title">{{ page.title | default: 'My Wishlist' }}</h1>
+  
+  <div id="wishlist-grid" class="wishlist-grid" style="display: none;">
+    <!-- Items rendered by JS -->
+  </div>
+  
+  <div id="wishlist-empty" class="wishlist-empty" style="display: none;">
+    <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+      <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+    </svg>
+    <h2>Your wishlist is empty</h2>
+    <p>Browse our products and add your favorites here!</p>
+    <br>
+    <a href="{{ routes.all_products_collection_url }}">Continue Shopping</a>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Wishlist",
+  "settings": []
+}
+{% endschema %}
